@@ -14,7 +14,7 @@ Live: [noor-al.netlify.app](https://noor-al.netlify.app/)
 
 # Burimet
 
-- Kurani: [alquran.cloud](https://alquran.cloud)
+- Kurani: [Quran.com](https://quran.com) (teksti arab), [Tanzil](https://tanzil.net) (perkthimet shqip)
 - Hadithet: [HadeethEnc](https://hadeethenc.com)
 
 # Start
@@ -42,7 +42,7 @@ Noor is a simple site for reading the Quran and authentic hadith in Albanian, us
 
 # Sources
 
-- Quran: [alquran.cloud](https://alquran.cloud)
+- Quran: [Quran.com](https://quran.com) (Arabic text), [Tanzil](https://tanzil.net) (Albanian translations)
 - Hadith: [HadeethEnc](https://hadeethenc.com)
 
 # Run locally

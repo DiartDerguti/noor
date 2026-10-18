@@ -24,7 +24,7 @@ const COLUMNS = [
     title: "Burimet",
     links: [
       { href: "https://quran.com", label: "Quran.com" },
-      { href: "https://alquran.cloud", label: "alquran.cloud" },
+      { href: "https://tanzil.net", label: "Tanzil" },
       { href: "https://hadeethenc.com", label: "HadeethEnc" },
       { href: "https://aladhan.com", label: "Aladhan" },
     ],

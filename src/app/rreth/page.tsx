@@ -35,8 +35,8 @@ const SOURCES: Source[] = [
       },
       ...TRANSLATIONS.map((t) => ({
         label: `Përkthimi i ${t.name}`,
-        detail: "alquran.cloud",
-        href: "https://alquran.cloud",
+        detail: "Tanzil, përmes quran-api",
+        href: "https://tanzil.net/trans/",
       })),
     ],
   },
