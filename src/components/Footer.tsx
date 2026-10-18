@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import InstallApp from "./InstallApp";
 
 const COLUMNS = [
   {
@@ -8,6 +9,7 @@ const COLUMNS = [
       { href: "/kurani", label: "Kurani" },
       { href: "/kurani/xhuz/1", label: "Sipas xhuzit" },
       { href: "/kurani/faqe/1", label: "Sipas faqes" },
+      { href: "/takvimi", label: "Kohët e namazit" },
     ],
   },
   {
@@ -46,6 +48,7 @@ export default function Footer() {
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
             Kurani në shqip dhe hadithe të sakta nga Buhariu e Muslimi, nga burime zyrtare.
           </p>
+          <InstallApp className="mt-5" />
         </div>
 
         {COLUMNS.map((col) => (

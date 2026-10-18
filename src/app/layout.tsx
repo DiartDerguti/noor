@@ -3,6 +3,7 @@ import { Inter, Literata, Scheherazade_New } from "next/font/google";
 import localFont from "next/font/local";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { RegisterServiceWorker } from "@/components/InstallApp";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
-  appleWebApp: { title: SITE_NAME, statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {
@@ -85,6 +86,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <RegisterServiceWorker />
       </body>
     </html>
   );

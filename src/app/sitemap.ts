@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...Array.from({ length: 114 }, (_, i) => page(`/kurani/${i + 1}`, 0.8)),
     page("/hadithe", 0.9),
     ...categories.map((c) => page(`/hadithe/tema/${c.id}`, 0.7)),
+    page("/takvimi", 0.8),
     page("/meso", 0.6),
     page("/rreth", 0.4),
   ];
