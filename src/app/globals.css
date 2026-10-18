@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-literata), ui-serif, Georgia, serif;
+  --font-arabic: var(--font-amiri), "Amiri", serif;
+
+  --color-paper: #0f1714;
+  --color-card: #16211c;
+  --color-ink: #ece6d8;
+  --color-muted: #9fb0a7;
+  --color-line: #26352e;
+  --color-emerald-deep: #7fcfaa;
+  --color-emerald-soft: #183128;
+  --color-gold: #d4b178;
+  --color-gold-soft: #2a2519;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gold) 35%, transparent);
+  }
+}
+
+@utility arabic {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  line-height: 2.3;
+}
+
+@utility pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23d4b178' stroke-opacity='.12' stroke-width='1'%3E%3Cpath d='M32 6 38 26 58 32 38 38 32 58 26 38 6 32 26 26Z'/%3E%3Cpath d='M13.6 13.6 32 22 50.4 13.6 42 32 50.4 50.4 32 42 13.6 50.4 22 32Z'/%3E%3C/g%3E%3C/svg%3E");
+}
