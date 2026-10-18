@@ -52,7 +52,8 @@ export default async function SurahMushafPage({ params }: Props) {
             {meta.name}
           </h1>
           <p className="font-serif text-2xl font-semibold">
-            {meta.englishName}
+            {meta.englishName}{" "}
+            <span className="font-normal text-muted">({meta.albanianName})</span>
           </p>
           <p className="text-muted mt-2 text-sm">
             Sureja {meta.number} · {revelationLabel(meta.revelationType)} ·{" "}
@@ -62,6 +63,8 @@ export default async function SurahMushafPage({ params }: Props) {
       </header>
 
       <TranslationTabs
+        title={`${meta.englishName} (${meta.albanianName})`}
+        subtitle={`Sureja ${number} · Mushaf`}
         basePath={`/kurani/${number}`}
         mushafHref={`/kurani/${number}/mushaf`}
         mushaf

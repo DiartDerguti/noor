@@ -36,7 +36,8 @@ export default function AyahList({
               >
                 <span>
                   <span className="block font-serif text-lg font-semibold">
-                    {surah.englishName}
+                    {surah.englishName}{" "}
+                    <span className="text-muted font-normal">({surah.albanianName})</span>
                   </span>
                   <span className="text-muted text-xs">
                     Sureja {surah.number} ·{" "}
@@ -77,6 +78,9 @@ export default function AyahList({
                           {translationName(t.id)}
                         </p>
                         <p className="text-ink/90 font-serif text-lg leading-relaxed">
+                          <span className="text-gold mr-1.5 font-sans text-sm font-medium tabular-nums">
+                            {a.numberInSurah}.
+                          </span>
                           {t.text}
                         </p>
                       </div>

@@ -54,6 +54,8 @@ export default async function Reader({ params }: Props) {
         subtitle={range}
       />
       <TranslationTabs
+        title={`Faqja ${n}`}
+        subtitle={range}
         basePath={`/kurani/faqe/${n}`}
         mushafHref={`/kurani/faqe/${n}/mushaf`}
       />

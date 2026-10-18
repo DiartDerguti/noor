@@ -14,7 +14,7 @@ export default async function ReaderLayout({
       <Suspense>
         <ReaderSidebar surahs={surahs} />
       </Suspense>
-      <div className="min-w-0 flex-1 pb-28 lg:pb-0">{children}</div>
+      <div className="min-w-0 flex-1 pb-20 lg:pb-0">{children}</div>
     </div>
   );
 }

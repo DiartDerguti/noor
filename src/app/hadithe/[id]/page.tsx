@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SITE_URL, pageMeta } from "@/lib/site";
-import { SOURCE_LABEL, getHadith, hadithAsText } from "@/lib/hadith";
+import { SOURCE_LABEL, getAllHadithIds, getHadith, hadithAsText } from "@/lib/hadith";
 import SourceBadge from "@/components/SourceBadge";
 import BackLink from "@/components/BackLink";
 import ShareBar from "@/components/ShareBar";
@@ -10,8 +10,8 @@ type Props = { params: Promise<{ id: string }> };
 
 export const revalidate = 86400;
 
-export function generateStaticParams() {
-  return [];
+export async function generateStaticParams() {
+  return (await getAllHadithIds()).map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

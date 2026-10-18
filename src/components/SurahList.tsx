@@ -40,7 +40,9 @@ export default function SurahList({ surahs }: { surahs: SurahMeta[] }) {
                 <span className="-rotate-45 font-medium tabular-nums">{s.number}</span>
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium">{s.englishName}</span>
+                <span className="block truncate font-medium">
+                  {s.englishName} <span className="font-normal text-muted">({s.albanianName})</span>
+                </span>
                 <span className="text-xs text-muted">
                   {revelationLabel(s.revelationType)} · {s.numberOfAyahs} ajete
                 </span>

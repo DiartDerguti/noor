@@ -22,7 +22,7 @@ function parseSurah(value: string) {
 }
 
 export function generateStaticParams() {
-  return [];
+  return Array.from({ length: 114 }, (_, i) => ({ sure: String(i + 1) }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -63,7 +63,8 @@ export default async function SurahPage({ params }: Props) {
             {meta.name}
           </h1>
           <p className="font-serif text-2xl font-semibold">
-            {meta.englishName}
+            {meta.englishName}{" "}
+            <span className="font-normal text-muted">({meta.albanianName})</span>
           </p>
           <p className="text-muted mt-2 text-sm">
             Sureja {meta.number} · {revelationLabel(meta.revelationType)} ·{" "}
@@ -73,6 +74,8 @@ export default async function SurahPage({ params }: Props) {
       </header>
 
       <TranslationTabs
+        title={`${meta.englishName} (${meta.albanianName})`}
+        subtitle={`Sureja ${number} · ${meta.numberOfAyahs} ajete`}
         basePath={`/kurani/${number}`}
         mushafHref={`/kurani/${number}/mushaf`}
       />

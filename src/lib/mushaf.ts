@@ -1,5 +1,3 @@
-const API = "https://api.quran.com/api/v4/verses/by_page";
-const WEEK = 60 * 60 * 24 * 7;
 
 export const MUSHAF_LINES = 15;
 
@@ -20,12 +18,16 @@ type Verse = {
 };
 
 export async function getMushafPage(page: number) {
-  const res = await fetch(
-    `${API}/${page}?words=true&word_fields=code_v1,line_number&fields=chapter_id&per_page=50`,
-    { next: { revalidate: WEEK } },
-  );
-  if (!res.ok) throw new Error(`Faqja e Mushafit nuk u ngarkua (${res.status})`);
-  const { verses } = (await res.json()) as { verses: Verse[] };
+  const pages = (await import("@/data/mushaf.json")).default as unknown as Record<
+    string,
+    [string, number, number, [string, number, number][]][]
+  >;
+  const verses: Verse[] = (pages[String(page)] ?? []).map(([key, verse, chapter, words]) => ({
+    verse_key: key,
+    verse_number: verse,
+    chapter_id: chapter,
+    words: words.map(([code, line, end]) => ({ code_v1: code, line_number: line, char_type_name: end ? "end" : "word" })),
+  }));
 
   const byLine = new Map<number, { code: string; end: boolean; key: string }[]>();
   const starts: { chapter: number; line: number }[] = [];

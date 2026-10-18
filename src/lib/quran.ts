@@ -1,8 +1,5 @@
 import SURAHS from "./surahs.json";
 
-const CDN = "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1";
-const QURAN_COM = "https://api.quran.com/api/v4/quran/verses/qpc_hafs";
-const WEEK = 60 * 60 * 24 * 7;
 
 export const TRANSLATIONS = [
   { id: "sq.nahi", name: "Hasan Efendi Nahi", edition: "sqi-hasanefendinahi" },
@@ -30,6 +27,7 @@ export type SurahMeta = {
   number: number;
   name: string;
   englishName: string;
+  albanianName: string;
   revelationType: "Meccan" | "Medinan";
   numberOfAyahs: number;
 };
@@ -64,104 +62,48 @@ export async function getSurahs(): Promise<SurahMeta[]> {
   return surahs;
 }
 
-async function json<T>(url: string): Promise<T> {
-  let res = await fetch(url, { next: { revalidate: WEEK } });
-  for (let attempt = 1; attempt <= 2 && (res.status === 429 || res.status >= 500); attempt++) {
-    await new Promise((r) => setTimeout(r, 800 * attempt));
-    res = await fetch(url, { next: { revalidate: WEEK } });
-  }
-  if (!res.ok) throw new Error(`Kurani nuk u ngarkua (${res.status})`);
-  return res.json() as Promise<T>;
+type Row = [juz: number, page: number, sajda: number, arabic: string, ...translations: string[]];
+
+async function data(): Promise<Row[][]> {
+  return (await import("@/data/quran.json")).default as unknown as Row[][];
 }
 
-type VerseInfo = { verse: number; juz: number; page: number; sajda: boolean | object };
-
-async function verseInfo() {
-  const info = await json<{ chapters: { chapter: number; verses: VerseInfo[] }[] }>(`${CDN}/info.min.json`);
-  return info.chapters;
-}
-
-async function arabicTexts(query: string) {
-  try {
-    const { verses } = await json<{ verses: { verse_key: string; text_qpc_hafs: string }[] }>(`${QURAN_COM}?${query}`);
-    return new Map(verses.map((v) => [v.verse_key, v.text_qpc_hafs.replace(/[\s ]*[٠-٩]+$/, "")]));
-  } catch {
-    return new Map<string, string>();
-  }
-}
-
-async function translationTexts(chapter: number, ids: readonly TranslationId[]) {
-  const editions = await Promise.all(
-    ids.map(async (id) => {
-      const edition = TRANSLATIONS.find((t) => t.id === id)!.edition;
-      const data = await json<{ chapter: { verse: number; text: string }[] }>(
-        `${CDN}/editions/${edition}/${chapter}.min.json`,
-      );
-      return { id, byVerse: new Map(data.chapter.map((v) => [v.verse, v.text])) };
-    }),
-  );
-  return (verse: number) => editions.map((e) => ({ id: e.id, text: e.byVerse.get(verse) ?? "" }));
-}
-
-function buildAyah(
-  chapter: number,
-  v: VerseInfo,
-  arabic: Map<string, string>,
-  translate: (verse: number) => { id: TranslationId; text: string }[],
-): Ayah {
+function buildAyah(chapter: number, verse: number, row: Row, ids: readonly TranslationId[]): Ayah {
   return {
-    number: offsets[chapter - 1] + v.verse,
-    numberInSurah: v.verse,
+    number: offsets[chapter - 1] + verse,
+    numberInSurah: verse,
     surah: chapter,
-    juz: v.juz,
-    page: v.page,
-    sajda: v.sajda,
-    arabic: arabic.get(`${chapter}:${v.verse}`) ?? "",
-    translations: translate(v.verse),
+    juz: row[0],
+    page: row[1],
+    sajda: row[2] === 1,
+    arabic: row[3],
+    translations: ids.map((id) => ({ id, text: String(row[4 + TRANSLATIONS.findIndex((t) => t.id === id)]) })),
   };
 }
 
 export async function getSurah(number: number, translations: readonly TranslationId[]) {
-  const [chapters, arabic, translate] = await Promise.all([
-    verseInfo(),
-    arabicTexts(`chapter_number=${number}`),
-    translationTexts(number, translations),
-  ]);
-  const ayahs = chapters[number - 1].verses.map((v) => buildAyah(number, v, arabic, translate));
+  const chapters = await data();
+  const ayahs = chapters[number - 1].map((row, i) => buildAyah(number, i + 1, row, translations));
   return { meta: surahs[number - 1], ayahs };
 }
 
 export async function getSection(kind: "page" | "juz", n: number, translations: readonly TranslationId[]) {
-  const chapters = await verseInfo();
-  const matches = chapters
-    .map((c) => ({ chapter: c.chapter, verses: c.verses.filter((v) => (kind === "page" ? v.page : v.juz) === n) }))
-    .filter((c) => c.verses.length > 0);
-
-  const [arabic, translators] = await Promise.all([
-    arabicTexts(`${kind === "page" ? "page_number" : "juz_number"}=${n}`),
-    Promise.all(matches.map((c) => translationTexts(c.chapter, translations))),
-  ]);
-
-  return matches.map<SurahGroup>((c, i) => ({
-    surah: surahs[c.chapter - 1],
-    ayahs: c.verses.map((v) => buildAyah(c.chapter, v, arabic, translators[i])),
-  }));
+  const chapters = await data();
+  const column = kind === "page" ? 1 : 0;
+  const groups: SurahGroup[] = [];
+  chapters.forEach((rows, c) => {
+    const ayahs = rows.flatMap((row, i) => (row[column] === n ? [buildAyah(c + 1, i + 1, row, translations)] : []));
+    if (ayahs.length > 0) groups.push({ surah: surahs[c], ayahs });
+  });
+  return groups;
 }
 
 export async function getAyah(globalNumber: number, translation: TranslationId) {
   const index = offsets.findLastIndex((o) => o < globalNumber);
   const surah = surahs[index];
   const verse = globalNumber - offsets[index];
-  const [arabic, translate] = await Promise.all([
-    arabicTexts(`verse_key=${surah.number}:${verse}`),
-    translationTexts(surah.number, [translation]),
-  ]);
-  return {
-    arabic: arabic.get(`${surah.number}:${verse}`) ?? "",
-    translation: translate(verse)[0].text,
-    numberInSurah: verse,
-    surah,
-  };
+  const ayah = buildAyah(surah.number, verse, (await data())[index][verse - 1], [translation]);
+  return { arabic: ayah.arabic, translation: ayah.translations[0].text, numberInSurah: verse, surah };
 }
 
 export function ayahOfTheDay(date = new Date()) {

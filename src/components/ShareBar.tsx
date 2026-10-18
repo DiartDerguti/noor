@@ -105,7 +105,7 @@ export default function ShareBar({
     } catch {}
   }
 
-  async function shareImage(format: "story" | "post") {
+  async function shareImage(format: "story") {
     if (!card) return;
     setBusy(format);
     try {
@@ -188,22 +188,31 @@ export default function ShareBar({
         </button>
       )}
       {card && (
-        <>
-          <button
-            type="button"
-            onClick={() => shareImage("story")}
-            className={`${button} border-gold/40 text-gold ${compact ? "h-9 px-3" : "px-3.5 py-2"}`}
+        <button
+          type="button"
+          onClick={() => shareImage("story")}
+          disabled={busy !== null}
+          title="Gjeneron një foto 1080×1920 me hadithin, gati për Instagram, WhatsApp Status ose Facebook Story"
+          className={`${button} border-gold/50 bg-gold-soft text-gold hover:border-gold ${
+            compact ? "h-9 px-3" : "px-3.5 py-2"
+          }`}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="size-4 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
           >
-            {busy === "story" ? "Duke përgatitur…" : "Story"}
-          </button>
-          <button
-            type="button"
-            onClick={() => shareImage("post")}
-            className={`${button} border-gold/40 text-gold ${compact ? "h-9 px-3" : "px-3.5 py-2"}`}
-          >
-            {busy === "post" ? "Duke përgatitur…" : "Post"}
-          </button>
-        </>
+            <rect x="5" y="2" width="14" height="20" rx="3" />
+            <circle cx="12" cy="10" r="2.5" />
+            <path d="m5 18 4.5-4 3 2.5L15 14l4 4" />
+          </svg>
+          {busy === "story" ? "Duke gjeneruar foton…" : "Gjenero foto për Story"}
+        </button>
       )}
     </div>
   );

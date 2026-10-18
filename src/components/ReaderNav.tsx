@@ -19,22 +19,29 @@ export default function ReaderNav({
 
   return (
     <>
-      <div className="mt-10 grid grid-cols-2 gap-3">
-        {prev ? (
-          <Link href={prev.href} className="rounded-2xl border border-line bg-card p-4 transition-colors hover:border-gold">
-            <span className="text-xs text-muted">← Mbrapa</span>
-            <span className="block font-medium">{prev.label}</span>
+      <div className="mt-8 flex items-center gap-3">
+        {prev && (
+          <Link
+            href={prev.href}
+            className="flex min-w-0 shrink-0 items-center gap-2 rounded-full border border-line bg-card px-4 py-3 text-sm transition-colors hover:border-gold"
+          >
+            <span aria-hidden>←</span>
+            <span className="truncate">{prev.label}</span>
           </Link>
-        ) : (
-          <span />
         )}
         {next && (
           <Link
             href={next.href}
-            className="rounded-2xl border border-line bg-card p-4 text-right transition-colors hover:border-gold"
+            className="group flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-emerald-deep px-5 py-3 text-sm font-medium text-paper transition-opacity hover:opacity-90"
           >
-            <span className="text-xs text-muted">Vazhdo →</span>
-            <span className="block font-medium">{next.label}</span>
+            <span className="opacity-80">Vazhdo</span>
+            <span aria-hidden className="opacity-50">
+              ·
+            </span>
+            <span className="truncate">{next.label}</span>
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">
+              →
+            </span>
           </Link>
         )}
       </div>

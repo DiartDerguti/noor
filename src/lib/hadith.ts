@@ -1,6 +1,3 @@
-const API = "https://hadeethenc.com/api/v1";
-const DAY = 60 * 60 * 24;
-const LANG = "sq";
 
 export const PER_PAGE = 20;
 
@@ -39,10 +36,27 @@ type RawHadith = {
   attribution_ar: string;
 };
 
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${API}${path}`, { next: { revalidate: DAY } });
-  if (!res.ok) throw new Error(`Hadithet nuk u ngarkuan (${res.status})`);
-  return res.json() as Promise<T>;
+type Data = { categories: { id: string; title: string; ids: string[] }[]; items: Record<string, Omit<RawHadith, "id">> };
+
+let cache: Promise<{ data: Data; byId: Map<string, Hadith> }> | null = null;
+
+function load() {
+  cache ??= import("@/data/hadith.json").then(({ default: raw }) => {
+    const data = raw as unknown as Data;
+    const byId = new Map<string, Hadith>();
+    for (const [id, item] of Object.entries(data.items)) {
+      const h = normalize({ id, ...item });
+      if (h) byId.set(id, h);
+    }
+    return { data, byId };
+  });
+  return cache;
+}
+
+async function topicHadiths(categoryId: string) {
+  const { data, byId } = await load();
+  const ids = data.categories.find((c) => c.id === categoryId)?.ids ?? [];
+  return ids.map((id) => byId.get(id)).filter((h): h is Hadith => h !== undefined);
 }
 
 const OTHER_SOURCES =
@@ -88,18 +102,22 @@ function normalize(raw: RawHadith): Hadith | null {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const list = await get<{ id: string; title: string; hadeeths_count: string }[]>(
-    `/categories/roots/?language=${LANG}`,
+  const { data } = await load();
+  return Promise.all(
+    data.categories.map(async (c) => ({
+      id: c.id,
+      title: c.title.replace("Kueani", "Kurani"),
+      count: (await topicHadiths(c.id)).length,
+    })),
   );
-  return list.map((c) => ({ id: c.id, title: c.title.replace("Kueani", "Kurani"), count: Number(c.hadeeths_count) }));
 }
 
 export async function getHadith(id: string) {
-  try {
-    return normalize(await get<RawHadith>(`/hadeeths/one/?language=${LANG}&id=${encodeURIComponent(id)}`));
-  } catch {
-    return null;
-  }
+  return (await load()).byId.get(id) ?? null;
+}
+
+export async function getAllHadithIds() {
+  return [...(await load()).byId.keys()];
 }
 
 export const SEARCH_LIMIT = 30;
@@ -117,31 +135,19 @@ export function simplify(text: string) {
 export async function searchCategory(categoryId: string, query: string) {
   const q = simplify(query);
   if (!q) return { hadiths: [], matches: 0 };
-
-  const list = await get<{ data: { id: string; title: string }[] }>(
-    `/hadeeths/list/?language=${LANG}&category_id=${encodeURIComponent(categoryId)}&page=1&per_page=1000`,
-  );
   const words = q.split(" ");
-  const matches = list.data.filter((h) => {
-    const title = simplify(h.title);
-    return words.every((w) => title.includes(w));
+  const matches = (await topicHadiths(categoryId)).filter((h) => {
+    const text = simplify(`${h.title} ${h.text}`);
+    return words.every((w) => text.includes(w));
   });
-  const hadiths = await Promise.all(matches.slice(0, SEARCH_LIMIT).map((h) => getHadith(h.id)));
-
-  return {
-    hadiths: hadiths.filter((h): h is Hadith => h !== null),
-    matches: matches.length,
-  };
+  return { hadiths: matches.slice(0, SEARCH_LIMIT), matches: matches.length };
 }
 
 export async function getCategoryPage(categoryId: string, page: number) {
-  const list = await get<{ data: { id: string }[]; meta: { last_page: number } }>(
-    `/hadeeths/list/?language=${LANG}&category_id=${encodeURIComponent(categoryId)}&page=${page}&per_page=${PER_PAGE}`,
-  );
-  const hadiths = await Promise.all(list.data.map((h) => getHadith(h.id)));
+  const all = await topicHadiths(categoryId);
   return {
-    hadiths: hadiths.filter((h): h is Hadith => h !== null),
-    lastPage: Number(list.meta.last_page) || 1,
+    hadiths: all.slice((page - 1) * PER_PAGE, page * PER_PAGE),
+    lastPage: Math.max(1, Math.ceil(all.length / PER_PAGE)),
   };
 }
 
