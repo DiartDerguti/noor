@@ -53,7 +53,7 @@ export default function HeroBanner({ hijri }: { hijri?: string }) {
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative isolate -mt-16 h-[80vh] min-h-[520px] overflow-hidden"
+      className="relative isolate -mt-16 h-[80vh] min-h-[620px] overflow-hidden"
     >
       {SLIDES.map((s, i) => (
         <Image
@@ -73,6 +73,20 @@ export default function HeroBanner({ hijri }: { hijri?: string }) {
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-paper/80 via-paper/20 to-transparent" />
       <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-paper/80 to-transparent" />
 
+      <div className="absolute top-1/2 right-3 z-10 flex -translate-y-1/2 flex-col gap-2 sm:right-5">
+        {SLIDES.map((s, i) => (
+          <button
+            key={s.src}
+            type="button"
+            onClick={() => setIndex(i)}
+            aria-label={s.place}
+            className={`w-1 rounded-full transition-all duration-500 ${
+              i === index ? "h-5 bg-white/50" : "h-1 bg-white/20 hover:bg-white/40"
+            }`}
+          />
+        ))}
+      </div>
+
       <div className="mx-auto flex h-full max-w-6xl flex-col justify-end px-4 pt-24 pb-28 sm:pb-36">
         {hijri && (
           <p className="mb-4 self-start rounded-full border border-white/15 bg-black/30 px-3 py-1 text-xs text-ink/90 backdrop-blur">
@@ -83,27 +97,7 @@ export default function HeroBanner({ hijri }: { hijri?: string }) {
         <h1 className="font-serif text-4xl font-semibold tracking-tight drop-shadow-lg sm:text-6xl">
           Esselamu alejkum.
         </h1>
-        <p className="mt-3 max-w-lg text-pretty text-ink/85 sm:text-lg">
-          Kurani në shqip nga Hasan Efendi Nahi, Sherif Ahmeti dhe Feti Mehdiu, dhe hadithe të sakta nga Buhariu e
-          Muslimi.
-        </p>
-        <ContinueReading />
-
-        <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
-          <div className="flex items-center gap-2">
-            {SLIDES.map((s, i) => (
-              <button
-                key={s.src}
-                type="button"
-                onClick={() => setIndex(i)}
-                aria-label={s.place}
-                className={`h-1.5 rounded-full transition-all duration-500 ${
-                  i === index ? "w-8 bg-gold" : "w-3 bg-white/35 hover:bg-white/60"
-                }`}
-              />
-            ))}
-          </div>
-
+        <div className="mt-6 flex justify-end">
           <a
             href={slide.source}
             target="_blank"
