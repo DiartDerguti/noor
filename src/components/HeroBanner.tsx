@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const SLIDES = [
   {
-    src: "/banner/prishtine.jpg",
+    src: "/banner/prishtine.webp",
     place: "Xhamia e Madhe (Fatih), Prishtinë",
     credit: "Fikret Ahmeti, CC BY-SA 4.0",
     source:
@@ -13,7 +13,7 @@ const SLIDES = [
     position: "center 40%",
   },
   {
-    src: "/banner/prizren.jpg",
+    src: "/banner/prizren.webp",
     place: "Xhamia e Sinan Pashës, Prizren",
     credit: "Ravi Dwivedi, CC BY-SA 4.0",
     source:
@@ -21,7 +21,7 @@ const SLIDES = [
     position: "center 45%",
   },
   {
-    src: "/banner/shkup.jpg",
+    src: "/banner/shkup.webp",
     place: "Xhamia e Jahja Pashës, Shkup",
     credit: "Mitatos, CC BY-SA 3.0",
     source:
@@ -29,7 +29,7 @@ const SLIDES = [
     position: "center 35%",
   },
   {
-    src: "/banner/tirane.jpg",
+    src: "/banner/tirane.webp",
     place: "Xhamia e Et'hem Beut, Tiranë",
     credit: "Yastay, CC BY 4.0",
     source:
@@ -73,7 +73,7 @@ export default function HeroBanner() {
           fill
           priority={i === 0}
           fetchPriority={i === 0 ? "high" : "low"}
-          quality={70}
+          quality={60}
           sizes="100vw"
           style={{ objectPosition: s.position }}
           className={`-z-20 scale-[1.04] object-cover transition-[opacity,transform] duration-[1400ms] ease-out ${

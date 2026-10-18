@@ -29,7 +29,7 @@ function subscribeCity(listener: () => void) {
 }
 
 function subscribeClock(listener: () => void) {
-  const timer = setInterval(listener, 1000);
+  const timer = setInterval(listener, 60000);
   return () => clearInterval(timer);
 }
 

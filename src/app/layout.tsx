@@ -8,22 +8,24 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   variable: "--font-inter",
 });
 const literata = Literata({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   variable: "--font-literata",
 });
 const naskh = Scheherazade_New({
   subsets: ["arabic"],
   weight: ["400", "700"],
   variable: "--font-naskh",
+  preload: false,
 });
 const quran = localFont({
   src: "../fonts/UthmanicHafs1Ver18.woff2",
   variable: "--font-quran",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
