@@ -162,3 +162,17 @@ export function hadithAsText(hadith: Hadith, url: string) {
     .filter(Boolean)
     .join("\n\n");
 }
+
+export async function getHadithOfTheDay(date = new Date()) {
+  const ids = await getAllHadithIds();
+  const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000);
+  return getHadith(ids[(day * 7919) % ids.length]);
+}
+
+export function hadithHeadline(hadith: Hadith) {
+  const strip = (t: string) => t.replace(/^["“„\s]+|["”\s]+$/g, "");
+  const title = strip(hadith.title);
+  if (/[.!?…]$/.test(title)) return title;
+  const text = strip(hadith.text).replace(/[.!?…]+$/, "");
+  return text.endsWith(title.replace(/[,;:]+$/, "")) ? `${title.replace(/[,;:]+$/, "")}.` : `${title.replace(/[,;:]+$/, "")}…`;
+}

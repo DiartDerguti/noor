@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SITE_URL, pageMeta } from "@/lib/site";
-import { SOURCE_LABEL, getAllHadithIds, getHadith, hadithAsText } from "@/lib/hadith";
+import { SOURCE_LABEL, getAllHadithIds, getHadith, hadithAsText, hadithHeadline } from "@/lib/hadith";
 import SourceBadge from "@/components/SourceBadge";
 import BackLink from "@/components/BackLink";
 import ShareBar from "@/components/ShareBar";
@@ -46,8 +46,12 @@ export default async function HadithPage({ params }: Props) {
         <div>
           <SourceBadge source={hadith.source} />
         </div>
-        <h1 className="mt-5 font-serif text-3xl leading-tight font-semibold sm:text-[2.6rem]">
-          {hadith.title}
+        <h1
+          className={`mt-5 font-serif leading-snug font-semibold ${
+            hadith.title.length > 140 ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"
+          }`}
+        >
+          {hadithHeadline(hadith)}
         </h1>
       </header>
 

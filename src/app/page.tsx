@@ -8,6 +8,7 @@ import Icon3D, { type Icon3DName } from "@/components/Icon3D";
 import PrayerTimes from "@/components/PrayerTimes";
 import RamadanCountdown from "@/components/RamadanCountdown";
 import ImportantDates from "@/components/ImportantDates";
+import { SOURCE_LABEL, getHadithOfTheDay, hadithHeadline } from "@/lib/hadith";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -57,6 +58,26 @@ async function AyahOfTheDay() {
   );
 }
 
+async function HadithOfTheDay() {
+  const hadith = await getHadithOfTheDay();
+  if (!hadith) return null;
+
+  return (
+    <section className="relative mx-auto max-w-4xl px-4 text-center">
+      <Eyebrow>Hadithi i ditës</Eyebrow>
+      <p className="mx-auto mt-6 max-w-3xl font-serif text-lg leading-relaxed text-ink/90 sm:text-xl">
+        {hadithHeadline(hadith)}
+      </p>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted">
+        <span>{SOURCE_LABEL[hadith.source]} · HadeethEnc</span>
+        <Link href={`/hadithe/${hadith.id}`} className="font-medium text-emerald-deep underline-offset-4 hover:underline">
+          Lexo shpjegimin →
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export default async function Home() {
   const [hijri, timings] = await Promise.all([
     getHijriToday().catch(() => null),
@@ -83,6 +104,12 @@ export default async function Home() {
 
       <div className="mt-24 sm:mt-32">
         <AyahOfTheDay />
+      </div>
+
+      <div className="mx-auto mt-16 max-w-4xl px-4 sm:mt-20">
+        <div className="border-t border-line pt-16 sm:pt-20">
+          <HadithOfTheDay />
+        </div>
       </div>
 
       <div className="mx-auto mt-24 grid max-w-6xl gap-8 px-4 sm:mt-32 lg:grid-cols-5 lg:gap-10">

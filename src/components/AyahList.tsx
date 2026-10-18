@@ -62,7 +62,7 @@ export default function AyahList({
                 <li
                   key={a.number}
                   id={`ajeti-${a.numberInSurah}`}
-                  className="scroll-mt-36 py-8"
+                  className="scroll-mt-36 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_260px]"
                 >
                   <p className="quran text-ink text-[1.9rem] sm:text-[2.25rem]">
                     {a.arabic}
