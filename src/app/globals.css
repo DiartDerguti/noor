@@ -78,6 +78,20 @@
   }
 }
 
+[data-tr-text],
+[data-tr-label] {
+  display: none;
+}
+
+html:not([data-tr]) [data-tr-text="sq.nahi"],
+html[data-tr="sq.nahi"] [data-tr-text="sq.nahi"],
+html[data-tr="sq.ahmeti"] [data-tr-text="sq.ahmeti"],
+html[data-tr="sq.mehdiu"] [data-tr-text="sq.mehdiu"],
+html[data-tr="te-gjitha"] [data-tr-text],
+html[data-tr="te-gjitha"] [data-tr-label] {
+  display: block;
+}
+
 @utility quran {
   font-family: var(--font-quran), var(--font-naskh), serif;
   direction: rtl;

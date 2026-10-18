@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SEARCH_LIMIT, type Category, type Hadith } from "@/lib/hadith";
+import { SEARCH_LIMIT, SOURCE_LABEL, type Category, type Hadith } from "@/lib/hadith";
 import HadithAnswer from "./HadithAnswer";
 import ShareBar from "./ShareBar";
 import { SITE_URL } from "@/lib/site";
@@ -64,6 +64,7 @@ export default function HadithTopic({
                   compact
                   url={`${SITE_URL}/hadithe/${h.id}`}
                   text={h.title}
+                  source={SOURCE_LABEL[h.source]}
                   card={`/hadithe/${h.id}/karta`}
                 />
               </div>

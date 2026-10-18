@@ -34,7 +34,9 @@ function Icon({ d, stroke = false }: { d: string; stroke?: boolean }) {
 export default function ShareBar({ url, text, source, card, compact = false }: Props) {
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
-  const message = `${text}\n\n${url}`;
+  const quote = text.replace(/^["“„]+|["”]+$/g, "");
+  const intro = ["*Noor · Hadith*", "", `_“${quote}”_`, ...(source ? [`— ${source}`] : [])].join("\n");
+  const message = `${intro}\n\nLexo shpjegimin dhe mësimet:\n${url}`;
 
   const links = [
     { name: "WhatsApp", icon: ICONS.whatsapp, href: `https://wa.me/?text=${encodeURIComponent(message)}` },
@@ -47,7 +49,7 @@ export default function ShareBar({ url, text, source, card, compact = false }: P
     {
       name: "Telegram",
       icon: ICONS.telegram,
-      href: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+      href: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(intro)}`,
     },
   ];
 
@@ -67,7 +69,7 @@ export default function ShareBar({ url, text, source, card, compact = false }: P
       const blob = await res.blob();
       const file = new File([blob], `noor-${format}.png`, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], text: url });
+        await navigator.share({ files: [file], text: message });
       } else {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);

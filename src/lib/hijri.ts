@@ -71,14 +71,14 @@ export function formatDate(date: Date) {
 export async function getHijriToday(): Promise<HijriDate> {
   const t = todayParts();
   const data = await get<{ hijri: { day: string; month: { number: number }; year: string } }>(
-    `/gToH/${pad(t.day)}-${pad(t.month)}-${t.year}?calendarMethod=Dijanet`,
+    `/gToH/${pad(t.day)}-${pad(t.month)}-${t.year}?calendarMethod=DIYANET`,
   );
   return { day: Number(data.hijri.day), month: data.hijri.month.number, year: Number(data.hijri.year) };
 }
 
 async function toGregorian(h: HijriDate) {
   const data = await get<{ gregorian: { date: string } }>(
-    `/hToG/${pad(h.day)}-${pad(h.month)}-${h.year}?calendarMethod=Dijanet`,
+    `/hToG/${pad(h.day)}-${pad(h.month)}-${h.year}?calendarMethod=DIYANET`,
   );
   return parseDmy(data.gregorian.date);
 }

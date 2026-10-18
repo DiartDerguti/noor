@@ -50,7 +50,7 @@ async function AyahOfTheDay() {
           href={`/kurani/${ayah.surah.number}#ajeti-${ayah.numberInSurah}`}
           className="font-medium text-emerald-deep underline-offset-4 hover:underline"
         >
-          Lexo suren →
+          Lexo ajetin →
         </Link>
       </div>
     </section>

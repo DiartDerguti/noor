@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TOTAL_JUZ, TOTAL_PAGES, type SurahMeta } from "@/lib/quran";
 
@@ -30,8 +30,7 @@ function current(pathname: string): { tab: Tab; value: number } {
 
 function Panel({ surahs, onNavigate }: { surahs: SurahMeta[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const p = useSearchParams().get("p");
-  const query = p ? `?p=${p}` : "";
+  const query = pathname.endsWith("/mushaf") ? "/mushaf" : "";
   const active = current(pathname);
   const [tab, setTab] = useState<Tab>(active.tab);
   const [search, setSearch] = useState("");

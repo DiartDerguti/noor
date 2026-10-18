@@ -92,7 +92,7 @@ export default async function HadithPage({ params }: Props) {
             <Label>Ndaje</Label>
             <p className="mt-2 text-sm text-muted">Dërgoje te të afërmit ose vendose si story.</p>
             <div className="mt-5">
-              <ShareBar url={url} text={hadith.title} card={`/hadithe/${hadith.id}/karta`} />
+              <ShareBar url={url} text={hadith.title} source={SOURCE_LABEL[hadith.source]} card={`/hadithe/${hadith.id}/karta`} />
             </div>
           </section>
 

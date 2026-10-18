@@ -2,7 +2,11 @@ import { Suspense } from "react";
 import { getSurahs } from "@/lib/quran";
 import ReaderSidebar from "@/components/ReaderSidebar";
 
-export default async function ReaderLayout({ children }: { children: React.ReactNode }) {
+export default async function ReaderLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const surahs = await getSurahs();
 
   return (

@@ -47,7 +47,11 @@ type Edition = SurahMeta & {
 };
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${API}${path}`, { next: { revalidate: WEEK } });
+  let res = await fetch(`${API}${path}`, { next: { revalidate: WEEK } });
+  for (let attempt = 1; attempt <= 3 && (res.status === 429 || res.status >= 500); attempt++) {
+    await new Promise((r) => setTimeout(r, 1000 * attempt));
+    res = await fetch(`${API}${path}`, { next: { revalidate: WEEK } });
+  }
   if (!res.ok) throw new Error(`Kurani nuk u ngarkua (${res.status})`);
   const json = await res.json();
   return json.data as T;
@@ -87,7 +91,7 @@ export async function getSurahs() {
 
 export async function getSurah(number: number, translations: TranslationId[]) {
   const [editions, texts] = await Promise.all([
-    get<Edition[]>(`/surah/${number}/editions/${["quran-uthmani", ...translations].join(",")}`),
+    Promise.all(["quran-uthmani", ...translations].map((edition) => get<Edition>(`/surah/${number}/${edition}`))),
     uthmani(`chapter_number=${number}`),
   ]);
   const [arabic, ...rest] = editions;

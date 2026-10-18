@@ -5,11 +5,18 @@ export const alt = "Sure nga Kurani në shqip";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
-export default async function Image({ params }: { params: Promise<{ sure: string }> }) {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ sure: string }>;
+}) {
   const n = Number((await params).sure);
   const surah = (await getSurahs().catch(() => [])).find((s) => s.number === n);
   if (!surah) {
-    return ogImage({ title: "Kurani në shqip", subtitle: "Nahi · Ahmeti · Mehdiu" });
+    return ogImage({
+      title: "Kurani në shqip",
+      subtitle: "Nahi · Ahmeti · Mehdiu",
+    });
   }
   return ogImage({
     eyebrow: `Sureja ${surah.number}`,

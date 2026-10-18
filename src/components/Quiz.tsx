@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { SOURCE_LABEL, type Source } from "@/lib/hadith";
 import { revelationLabel, type SurahMeta } from "@/lib/quran";
+import Icon3D from "./Icon3D";
 
 export type QuizHadith = { id: string; title: string; source: Source };
 
 type Question = {
+  kind: string;
   prompt: string;
   detail?: string;
   options: string[];
@@ -16,6 +18,24 @@ type Question = {
 };
 
 const LENGTH = 10;
+const LETTERS = ["A", "B", "C", "D"];
+const BEST_KEY = "noor:quiz-best";
+const bestListeners = new Set<() => void>();
+
+function readBest() {
+  try {
+    return Number(localStorage.getItem(BEST_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function saveBest(score: number) {
+  try {
+    if (score > readBest()) localStorage.setItem(BEST_KEY, String(score));
+  } catch {}
+  bestListeners.forEach((l) => l());
+}
 
 function pick<T>(list: T[]) {
   return list[Math.floor(Math.random() * list.length)];
@@ -40,6 +60,7 @@ function buildQuestions(surahs: SurahMeta[], hadiths: QuizHadith[]): Question[] 
     () => {
       const s = pick(surahs);
       return {
+        kind: "Kurani · Numri i ajeteve",
         prompt: `Sa ajete ka sureja ${s.englishName}?`,
         options: withDistractors(
           String(s.numberOfAyahs),
@@ -52,6 +73,7 @@ function buildQuestions(surahs: SurahMeta[], hadiths: QuizHadith[]): Question[] 
     () => {
       const s = pick(surahs);
       return {
+        kind: "Kurani · Vendi i shpalljes",
         prompt: `Ku është shpallur sureja ${s.englishName}?`,
         options: ["Mekë", "Medinë"],
         answer: revelationLabel(s.revelationType),
@@ -61,6 +83,7 @@ function buildQuestions(surahs: SurahMeta[], hadiths: QuizHadith[]): Question[] 
     () => {
       const s = pick(surahs);
       return {
+        kind: "Kurani · Renditja",
         prompt: `Cila është sureja e ${s.number}-të në Kuran?`,
         options: withDistractors(
           s.englishName,
@@ -76,6 +99,7 @@ function buildQuestions(surahs: SurahMeta[], hadiths: QuizHadith[]): Question[] 
     makers.push(() => {
       const h = pick(hadiths);
       return {
+        kind: "Hadith · Transmetuesi",
         prompt: "Kush e transmeton këtë hadith?",
         detail: h.title,
         options: Object.values(SOURCE_LABEL),
@@ -97,127 +121,234 @@ function buildQuestions(surahs: SurahMeta[], hadiths: QuizHadith[]): Question[] 
   return questions;
 }
 
+function verdict(score: number) {
+  if (score === LENGTH) return "MashaAllah, të gjitha saktë!";
+  if (score >= 7) return "Shumë mirë. Edhe pak dhe i ke të gjitha.";
+  if (score >= 4) return "Mirë. Çdo gabim është një mësim i ri.";
+  return "Fillim i mirë. Lexo pak dhe provo përsëri.";
+}
+
 export default function Quiz({ surahs, hadiths }: { surahs: SurahMeta[]; hadiths: QuizHadith[] }) {
   const [questions, setQuestions] = useState<Question[] | null>(null);
-  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<string[]>([]);
   const [chosen, setChosen] = useState<string | null>(null);
-  const [score, setScore] = useState(0);
+  const best = useSyncExternalStore(
+    (l) => {
+      bestListeners.add(l);
+      return () => bestListeners.delete(l);
+    },
+    readBest,
+    () => 0,
+  );
+
+  const index = answers.length - (chosen === null ? 0 : 1);
+  const q = questions?.[index];
+  const finished = questions !== null && answers.length === LENGTH && chosen === null;
+  const score = questions ? answers.filter((a, i) => a === questions[i].answer).length : 0;
 
   function start() {
     setQuestions(buildQuestions(surahs, hadiths));
-    setIndex(0);
+    setAnswers([]);
     setChosen(null);
-    setScore(0);
   }
+
+  const choose = useCallback(
+    (option: string) => {
+      if (!q || chosen !== null) return;
+      setChosen(option);
+      setAnswers((a) => [...a, option]);
+    },
+    [q, chosen],
+  );
+
+  const next = useCallback(() => {
+    if (chosen === null || !questions) return;
+    setChosen(null);
+    if (answers.length === LENGTH) {
+      saveBest(answers.filter((a, i) => a === questions[i].answer).length);
+    }
+  }, [chosen, answers, questions]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (!q) return;
+      if (chosen !== null && (e.key === "Enter" || e.key === " ")) {
+        e.preventDefault();
+        next();
+        return;
+      }
+      const i = /^[1-4]$/.test(e.key) ? Number(e.key) - 1 : LETTERS.indexOf(e.key.toUpperCase());
+      if (i >= 0 && i < q.options.length) choose(q.options[i]);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [q, chosen, choose, next]);
+
+  const card = "rounded-[2rem] border border-line bg-card p-6 sm:p-10";
+  const primary =
+    "rounded-full bg-emerald-deep px-7 py-3 font-medium text-paper transition-opacity hover:opacity-90";
 
   if (!questions) {
     return (
-      <div className="rounded-3xl border border-line bg-card p-8 text-center">
-        <p className="arabic text-3xl text-gold">بسم الله</p>
-        <p className="mt-3 text-muted">Gati? Çdo raund ka pyetje të reja.</p>
-        <button
-          type="button"
-          onClick={start}
-          className="mt-6 rounded-full bg-emerald-deep px-6 py-3 font-medium text-paper hover:opacity-90"
-        >
-          Fillo
+      <div className={`${card} flex flex-col items-center text-center`}>
+        <Icon3D name="cap" className="size-24" />
+        <h2 className="mt-6 font-serif text-3xl font-semibold">Gati për {LENGTH} pyetje?</h2>
+        <p className="mt-3 max-w-md text-muted">
+          Pyetje të shkurtra për suret e Kuranit dhe hadithet e Buhariut e Muslimit. Çdo raund ka pyetje të reja.
+        </p>
+        {best > 0 && (
+          <p className="mt-5 rounded-full border border-gold/40 bg-gold-soft px-4 py-1.5 text-sm text-gold">
+            Rezultati yt më i mirë: {best}/{LENGTH}
+          </p>
+        )}
+        <button type="button" onClick={start} className={`mt-8 ${primary}`}>
+          Fillo kuizin
         </button>
       </div>
     );
   }
 
-  if (index >= questions.length) {
+  if (finished) {
     return (
-      <div className="rounded-3xl border border-line bg-card p-8 text-center">
-        <p className="text-sm text-muted">Rezultati</p>
-        <p className="mt-2 font-serif text-6xl font-semibold text-emerald-deep tabular-nums">
-          {score}
-          <span className="text-3xl text-muted">/{questions.length}</span>
-        </p>
-        <p className="mt-4 text-muted">
-          {score === questions.length ? "MashaAllah, të gjitha saktë!" : "Çdo gabim është një mësim. Provo përsëri."}
-        </p>
-        <button
-          type="button"
-          onClick={start}
-          className="mt-6 rounded-full bg-emerald-deep px-6 py-3 font-medium text-paper hover:opacity-90"
-        >
-          Raund i ri
-        </button>
+      <div className={card}>
+        <div className="flex flex-col items-center text-center">
+          <div className="grid size-36 place-items-center rounded-full border-4 border-gold/60 bg-gold-soft">
+            <span className="font-serif text-5xl font-semibold text-gold tabular-nums">
+              {score}
+              <span className="text-2xl text-gold/60">/{LENGTH}</span>
+            </span>
+          </div>
+          <h2 className="mt-6 font-serif text-3xl font-semibold">{verdict(score)}</h2>
+          {score >= best && score > 0 && <p className="mt-2 text-sm text-gold">Rezultati yt më i mirë deri tani.</p>}
+        </div>
+
+        <ol className="mt-10 divide-y divide-line border-y border-line">
+          {questions.map((item, i) => {
+            const right = answers[i] === item.answer;
+            return (
+              <li key={i} className="flex items-start gap-4 py-4">
+                <span
+                  className={`mt-0.5 grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${
+                    right ? "bg-emerald-soft text-emerald-deep" : "bg-red-500/15 text-red-300"
+                  }`}
+                >
+                  {right ? "✓" : "✗"}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium">{item.prompt}</span>
+                  <span className="block text-sm text-muted">
+                    {right ? item.answer : `Ti: ${answers[i]} · Saktë: ${item.answer}`}
+                  </span>
+                </span>
+                <Link href={item.link.href} className="shrink-0 text-sm text-emerald-deep hover:underline">
+                  Shiko →
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+
+        <div className="mt-8 flex justify-center">
+          <button type="button" onClick={start} className={primary}>
+            Raund i ri
+          </button>
+        </div>
       </div>
     );
   }
 
-  const q = questions[index];
   const answered = chosen !== null;
-
-  function choose(option: string) {
-    if (answered) return;
-    setChosen(option);
-    if (option === q.answer) setScore((s) => s + 1);
-  }
+  const correct = chosen === q!.answer;
 
   return (
-    <div className="rounded-3xl border border-line bg-card p-6 sm:p-8">
-      <div className="mb-6 flex items-center gap-3 text-sm text-muted">
-        <span className="tabular-nums">
-          {index + 1}/{questions.length}
-        </span>
-        <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
+    <div className={card}>
+      <div className="flex gap-1.5" aria-hidden>
+        {questions.map((item, i) => (
           <span
-            className="block h-full rounded-full bg-gold transition-all"
-            style={{ width: `${(index / questions.length) * 100}%` }}
+            key={i}
+            className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${
+              i < answers.length
+                ? answers[i] === item.answer
+                  ? "bg-emerald-deep"
+                  : "bg-red-400/70"
+                : i === index
+                  ? "bg-gold/70"
+                  : "bg-line"
+            }`}
           />
-        </span>
-        <span className="tabular-nums">{score} saktë</span>
+        ))}
       </div>
 
-      <h2 className="font-serif text-2xl font-semibold text-balance">{q.prompt}</h2>
-      {q.detail && (
-        <blockquote className="mt-4 border-l-2 border-gold pl-4 font-serif leading-relaxed text-ink/85">
-          {q.detail}
+      <div className="mt-8 flex items-center justify-between text-sm">
+        <span className="text-xs font-medium tracking-[0.2em] text-gold uppercase">{q!.kind}</span>
+        <span className="text-muted tabular-nums">
+          {index + 1} / {LENGTH}
+        </span>
+      </div>
+
+      <h2 className="mt-3 font-serif text-2xl font-semibold text-balance sm:text-3xl">{q!.prompt}</h2>
+      {q!.detail && (
+        <blockquote className="mt-5 rounded-2xl border border-line bg-paper/50 p-5 font-serif text-lg leading-relaxed text-ink/90">
+          {q!.detail}
         </blockquote>
       )}
 
-      <div className="mt-6 grid gap-2">
-        {q.options.map((option) => {
+      <div className="mt-8 grid gap-3">
+        {q!.options.map((option, i) => {
+          const isAnswer = option === q!.answer;
+          const isChosen = option === chosen;
           const state = !answered
-            ? "border-line hover:border-gold"
-            : option === q.answer
-              ? "border-emerald-deep bg-emerald-soft text-emerald-deep"
-              : option === chosen
-                ? "border-red-400 bg-red-500/10 text-red-300"
-                : "border-line opacity-50";
+            ? "border-line hover:border-gold/60 hover:bg-paper/40"
+            : isAnswer
+              ? "border-emerald-deep/70 bg-emerald-soft"
+              : isChosen
+                ? "border-red-400/60 bg-red-500/10"
+                : "border-line opacity-45";
           return (
             <button
               key={option}
               type="button"
               disabled={answered}
               onClick={() => choose(option)}
-              className={`rounded-2xl border px-5 py-3.5 text-left transition-colors ${state}`}
+              className={`flex items-center gap-4 rounded-2xl border px-4 py-4 text-left transition-all ${state}`}
             >
-              {option}
+              <span
+                className={`grid size-9 shrink-0 place-items-center rounded-xl text-sm font-semibold ${
+                  answered && isAnswer
+                    ? "bg-emerald-deep text-paper"
+                    : answered && isChosen
+                      ? "bg-red-400/80 text-paper"
+                      : "bg-paper/70 text-muted"
+                }`}
+              >
+                {LETTERS[i]}
+              </span>
+              <span className="text-lg">{option}</span>
             </button>
           );
         })}
       </div>
 
-      {answered && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <Link href={q.link.href} target="_blank" className="text-sm text-emerald-deep underline-offset-4 hover:underline">
-            {q.link.label} ↗
-          </Link>
-          <button
-            type="button"
-            onClick={() => {
-              setIndex((i) => i + 1);
-              setChosen(null);
-            }}
-            className="rounded-full bg-emerald-deep px-5 py-2.5 font-medium text-paper hover:opacity-90"
-          >
-            {index + 1 === questions.length ? "Shiko rezultatin" : "Vazhdo →"}
+      {answered ? (
+        <div
+          className={`mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-5 ${
+            correct ? "border-emerald-deep/40 bg-emerald-soft/60" : "border-red-400/30 bg-red-500/5"
+          }`}
+        >
+          <div>
+            <p className={`font-medium ${correct ? "text-emerald-deep" : "text-red-300"}`}>
+              {correct ? "Saktë!" : `Përgjigjja e saktë: ${q!.answer}`}
+            </p>
+            <Link href={q!.link.href} target="_blank" className="text-sm text-muted hover:text-ink">
+              {q!.link.label} ↗
+            </Link>
+          </div>
+          <button type="button" onClick={next} className={primary}>
+            {answers.length === LENGTH ? "Shiko rezultatin" : "Vazhdo →"}
           </button>
         </div>
+      ) : (
+        <p className="mt-6 text-center text-xs text-muted">Mund të përgjigjesh edhe me tastierë: 1–4 ose A–D</p>
       )}
     </div>
   );
