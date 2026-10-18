@@ -1,28 +1,44 @@
 import type { Metadata, Viewport } from "next";
-import { Amiri, Inter, Literata } from "next/font/google";
+import { Inter, Literata, Scheherazade_New } from "next/font/google";
+import localFont from "next/font/local";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" });
 const literata = Literata({ subsets: ["latin", "latin-ext"], variable: "--font-literata" });
-const amiri = Amiri({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-amiri" });
-
-const description =
-  "Kurani me përkthimet shqip të Hasan Efendi Nahit, Sherif Ahmetit dhe Feti Mehdiut, dhe hadithe nga Buhariu e Muslimi.";
+const naskh = Scheherazade_New({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-naskh" });
+const quran = localFont({ src: "../fonts/UthmanicHafs1Ver18.woff2", variable: "--font-quran", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://noor-al.netlify.app"),
-  title: { default: "Noor · Kurani dhe Hadithi në shqip", template: "%s · Noor" },
-  description,
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TITLE, template: `%s · ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "Kurani në shqip",
+    "Kurani shqip",
+    "Hasan Efendi Nahi",
+    "Sherif Ahmeti",
+    "Feti Mehdiu",
+    "hadithe",
+    "Buhariu",
+    "Muslimi",
+    "Islam",
+    "Quran Albanian",
+  ],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Noor · Kurani dhe Hadithi në shqip",
-    description,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     url: "/",
-    siteName: "Noor",
+    siteName: SITE_NAME,
     locale: "sq_AL",
     type: "website",
   },
+  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION },
+  appleWebApp: { title: SITE_NAME, statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {
@@ -31,7 +47,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sq" className={`${inter.variable} ${literata.variable} ${amiri.variable}`}>
+    <html lang="sq" className={`${inter.variable} ${literata.variable} ${naskh.variable} ${quran.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <Header />
         <main className="flex-1">{children}</main>

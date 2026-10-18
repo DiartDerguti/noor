@@ -1,41 +1,48 @@
 import Link from "next/link";
 import { DEFAULT_TRANSLATION, ayahOfTheDay, getAyah, translationName } from "@/lib/quran";
-import ContinueReading from "@/components/ContinueReading";
+import HeroBanner from "@/components/HeroBanner";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { formatHijri, getHijriToday, getUpcomingEvents } from "@/lib/hijri";
+import { DEFAULT_CITY, getTimings } from "@/lib/prayer";
+import Icon3D, { type Icon3DName } from "@/components/Icon3D";
+import PrayerTimes from "@/components/PrayerTimes";
+import RamadanCountdown from "@/components/RamadanCountdown";
+import ImportantDates from "@/components/ImportantDates";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  inLanguage: "sq",
+};
 
 export const revalidate = 3600;
 
-const SECTIONS = [
-  {
-    href: "/kurani",
-    title: "Kurani",
-    arabic: "القرآن",
-    text: "Të 114 suret me tekstin arab dhe tri përkthimet shqip: Nahi, Ahmeti dhe Mehdiu.",
-  },
-  {
-    href: "/hadithe",
-    title: "Hadithe",
-    arabic: "الحديث",
-    text: "Vetëm nga Sahihu i Buhariut dhe i Muslimit, me shpjegim dhe mësimet që nxirren.",
-  },
-  {
-    href: "/meso",
-    title: "Mëso",
-    arabic: "تعلّم",
-    text: "Pyetje të shkurtra për suret dhe hadithet, për ta përforcuar atë që di.",
-  },
+const SECTIONS: { href: string; icon: Icon3DName; title: string; arabic: string; text: string }[] = [
+  { href: "/kurani", icon: "book", title: "Kurani", arabic: "القرآن", text: "114 sure, tre përkthime shqip" },
+  { href: "/hadithe", icon: "scroll", title: "Hadithe", arabic: "الحديث", text: "Buhariu dhe Muslimi, me shpjegim" },
+  { href: "/meso", icon: "cap", title: "Mëso", arabic: "تعلّم", text: "Kuiz për suret dhe hadithet" },
+  { href: "/rreth", icon: "seal", title: "Burimet", arabic: "المصادر", text: "Nga vjen çdo tekst" },
 ];
 
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <p className="text-xs font-medium tracking-[0.25em] text-gold uppercase">{children}</p>;
+}
+
 async function AyahOfTheDay() {
-  const number = ayahOfTheDay();
-  const ayah = await getAyah(number, DEFAULT_TRANSLATION).catch(() => null);
+  const ayah = await getAyah(ayahOfTheDay(), DEFAULT_TRANSLATION).catch(() => null);
   if (!ayah) return null;
 
   return (
-    <section className="rounded-3xl border border-line bg-card p-6 sm:p-10">
-      <p className="text-xs font-medium tracking-[0.2em] text-gold uppercase">Ajeti i ditës</p>
-      <p className="arabic mt-6 text-3xl text-ink sm:text-4xl">{ayah.arabic}</p>
-      <p className="mt-6 font-serif text-lg leading-relaxed text-ink/90 sm:text-xl">{ayah.translation}</p>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
+    <section className="relative mx-auto max-w-4xl px-4 text-center">
+      <Eyebrow>Ajeti i ditës</Eyebrow>
+      <p className="quran mt-8 text-[2rem] leading-[2.3] text-ink sm:text-[2.6rem]">{ayah.arabic}</p>
+      <p className="mx-auto mt-6 max-w-2xl font-serif text-xl leading-relaxed text-ink/85 sm:text-2xl">
+        {ayah.translation}
+      </p>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted">
         <span>
           {ayah.surah.englishName} {ayah.surah.number}:{ayah.numberInSurah} · {translationName(DEFAULT_TRANSLATION)}
         </span>
@@ -50,56 +57,60 @@ async function AyahOfTheDay() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const [hijri, timings] = await Promise.all([
+    getHijriToday().catch(() => null),
+    getTimings(DEFAULT_CITY, { next: { revalidate: 3600 } }),
+  ]);
+  const events = hijri ? await getUpcomingEvents(hijri).catch(() => []) : [];
+  const ramadan = events.find((e) => e.hijri.month === 9 && e.hijri.day === 1);
+
   return (
-    <div className="mx-auto max-w-5xl px-4">
-      <section className="pattern relative -mx-4 mb-10 overflow-hidden px-4 pt-16 pb-14 text-center sm:pt-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-paper/40 to-paper" />
-        <div className="relative">
-          <p className="arabic text-4xl text-gold sm:text-5xl">السلام عليكم</p>
-          <h1 className="mx-auto mt-4 max-w-2xl font-serif text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-            Esselamu alejkum.
-            <span className="block text-emerald-deep">Mëso qartë atë që e di.</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-pretty text-muted sm:text-lg">
-            Kurani në shqip dhe hadithe të sakta, të paraqitura thjesht. Vetëm përkthime të njohura dhe burime zyrtare.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/kurani"
-              className="rounded-full bg-emerald-deep px-6 py-3 font-medium text-paper transition-opacity hover:opacity-90"
-            >
-              Hap Kuranin
-            </Link>
-            <Link
-              href="/hadithe"
-              className="rounded-full border border-line bg-card px-6 py-3 font-medium transition-colors hover:border-gold"
-            >
-              Lexo hadithe
-            </Link>
-          </div>
-          <ContinueReading />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      <HeroBanner hijri={hijri ? formatHijri(hijri) : undefined} />
+
+      <div className="relative z-10 mx-auto -mt-12 max-w-6xl px-4 sm:-mt-16">
+        <PrayerTimes initial={timings} />
+      </div>
+
+      {hijri && (
+        <div className="mx-auto mt-20 max-w-6xl px-4 sm:mt-28">
+          <RamadanCountdown today={hijri} ramadan={ramadan} />
         </div>
-      </section>
+      )}
 
-      <AyahOfTheDay />
+      <div className="mt-24 sm:mt-32">
+        <AyahOfTheDay />
+      </div>
 
-      <section className="mt-10 grid gap-4 sm:grid-cols-3">
-        {SECTIONS.map((s) => (
-          <Link
-            key={s.href}
-            href={s.href}
-            className="group rounded-3xl border border-line bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-gold"
-          >
-            <p className="arabic text-2xl text-gold">{s.arabic}</p>
-            <h2 className="mt-2 font-serif text-2xl font-semibold">{s.title}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{s.text}</p>
-            <p className="mt-4 text-sm font-medium text-emerald-deep">
-              Hyr <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
-            </p>
-          </Link>
-        ))}
-      </section>
-    </div>
+      <div className="mx-auto mt-24 grid max-w-6xl gap-8 px-4 sm:mt-32 lg:grid-cols-5 lg:gap-10">
+        {hijri && events.length > 0 && (
+          <div className="lg:col-span-3">
+            <ImportantDates today={hijri} events={events} />
+          </div>
+        )}
+
+        <section className="self-start rounded-[2rem] border border-line bg-card p-6 sm:p-8 lg:col-span-2">
+          <h2 className="font-serif text-2xl font-semibold">Eksploro</h2>
+          <p className="mt-1 text-sm text-muted">Çfarë gjen në Noor</p>
+          <ul className="mt-6 divide-y divide-line">
+            {SECTIONS.map((s) => (
+              <li key={s.href}>
+                <Link href={s.href} className="group flex items-center gap-4 py-4">
+                  <Icon3D name={s.icon} className="size-12" still />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium transition-colors group-hover:text-gold">{s.title}</span>
+                    <span className="block text-sm text-muted">{s.text}</span>
+                  </span>
+                  <span className="text-muted transition-all group-hover:translate-x-1 group-hover:text-gold">→</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </>
   );
 }

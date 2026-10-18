@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/site";
 import Link from "next/link";
 import { getCategories } from "@/lib/hadith";
 import PageHeading from "@/components/PageHeading";
 
-export const metadata: Metadata = { title: "Hadithe" };
+export const metadata: Metadata = pageMeta({
+  title: "Hadithe nga Buhariu dhe Muslimi",
+  description: "Hadithe të sakta në shqip, vetëm nga Sahihu i Buhariut dhe i Muslimit, secili me shpjegim dhe mësimet që nxirren prej tij.",
+  path: "/hadithe",
+});
 
 export default async function HadithsPage() {
   const categories = await getCategories();
 
   return (
-    <div className="mx-auto max-w-5xl px-4">
+    <div className="mx-auto max-w-6xl px-4">
       <PageHeading
         arabic="الحديث النبوي"
         title="Hadithe nga Buhariu dhe Muslimi"

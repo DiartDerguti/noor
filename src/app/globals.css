@@ -3,7 +3,7 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-literata), ui-serif, Georgia, serif;
-  --font-arabic: var(--font-amiri), "Amiri", serif;
+  --font-arabic: var(--font-naskh), "Scheherazade New", serif;
 
   --color-paper: #0f1714;
   --color-card: #16211c;
@@ -25,9 +25,64 @@
     @apply bg-paper text-ink font-sans antialiased;
   }
 
+  button:not(:disabled),
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+
   ::selection {
     background: color-mix(in srgb, var(--color-gold) 35%, transparent);
   }
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes float-shadow {
+  50% {
+    transform: scaleX(0.85);
+    opacity: 0.7;
+  }
+}
+
+@layer components {
+  .icon-3d {
+    filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.35));
+  }
+
+  .icon-3d-still {
+    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
+  }
+
+  .icon-3d-shadow {
+    transform-origin: 32px 60px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .icon-3d:not(.icon-3d-still) .icon-3d-body {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .icon-3d-shadow {
+      animation: float-shadow 4s ease-in-out infinite;
+    }
+  }
+}
+
+@utility quran {
+  font-family: var(--font-quran), var(--font-naskh), serif;
+  direction: rtl;
+  line-height: 2.2;
+  word-spacing: 0.05em;
 }
 
 @utility arabic {
@@ -37,5 +92,12 @@
 }
 
 @utility pattern {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23d4b178' stroke-opacity='.12' stroke-width='1'%3E%3Cpath d='M32 6 38 26 58 32 38 38 32 58 26 38 6 32 26 26Z'/%3E%3Cpath d='M13.6 13.6 32 22 50.4 13.6 42 32 50.4 50.4 32 42 13.6 50.4 22 32Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image:
+    radial-gradient(ellipse 60% 55% at 15% 0%, rgb(127 207 170 / 0.16), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 90% 5%, rgb(212 177 120 / 0.14), transparent 70%),
+    radial-gradient(rgb(236 230 216 / 0.07) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    22px 22px;
 }

@@ -25,7 +25,7 @@ export default function SurahList({ surahs }: { surahs: SurahMeta[] }) {
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Kërko sipas emrit ose numrit…"
+        placeholder="Kërko..."
         className="mb-6 w-full rounded-2xl border border-line bg-card px-5 py-3.5 outline-none placeholder:text-muted focus:border-gold"
       />
 

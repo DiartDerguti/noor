@@ -23,6 +23,8 @@ export type Hadith = {
   lessons: string[];
   grade: string;
   source: Source;
+  attribution: string;
+  url: string;
 };
 
 type RawHadith = {
@@ -33,6 +35,7 @@ type RawHadith = {
   explanation: string;
   hints?: string[];
   grade: string;
+  attribution: string;
   attribution_ar: string;
 };
 
@@ -79,6 +82,8 @@ function normalize(raw: RawHadith): Hadith | null {
     lessons: (raw.hints ?? []).map(clean).filter(Boolean),
     grade: raw.grade,
     source,
+    attribution: raw.attribution && !isMostlyArabic(raw.attribution) ? clean(raw.attribution) : SOURCE_LABEL[source],
+    url: `https://hadeethenc.com/sq/browse/hadith/${raw.id}`,
   };
 }
 
