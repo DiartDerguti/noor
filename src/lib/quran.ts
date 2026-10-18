@@ -1,3 +1,4 @@
+import SURAHS from "./surahs.json";
 const API = "https://api.alquran.cloud/v1";
 const WEEK = 60 * 60 * 24 * 7;
 
@@ -78,15 +79,8 @@ export function revelationLabel(type: SurahMeta["revelationType"]) {
   return type === "Meccan" ? "Mekë" : "Medinë";
 }
 
-export async function getSurahs() {
-  const list = await get<SurahMeta[]>("/surah");
-  return list.map(({ number, name, englishName, revelationType, numberOfAyahs }) => ({
-    number,
-    name,
-    englishName,
-    revelationType,
-    numberOfAyahs,
-  }));
+export async function getSurahs(): Promise<SurahMeta[]> {
+  return SURAHS as SurahMeta[];
 }
 
 export async function getSurah(number: number, translations: TranslationId[]) {
