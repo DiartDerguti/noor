@@ -38,8 +38,13 @@ export default function ShareBar({ url, text, source, card, compact = false }: P
   const intro = ["*Noor · Hadith*", "", `_“${quote}”_`, ...(source ? [`— ${source}`] : [])].join("\n");
   const message = `${intro}\n\nLexo shpjegimin dhe mësimet:\n${url}`;
 
-  const links = [
-    { name: "WhatsApp", icon: ICONS.whatsapp, href: `https://wa.me/?text=${encodeURIComponent(message)}` },
+  const links: { name: string; icon: string; href: string; app?: string }[] = [
+    {
+      name: "WhatsApp",
+      icon: ICONS.whatsapp,
+      href: `https://wa.me/?text=${encodeURIComponent(message)}`,
+      app: `whatsapp://send?text=${encodeURIComponent(message)}`,
+    },
     { name: "Facebook", icon: ICONS.facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
     {
       name: "X",
@@ -94,6 +99,12 @@ export default function ShareBar({ url, text, source, card, compact = false }: P
           href={l.href}
           target="_blank"
           rel="noreferrer"
+          onClick={(e) => {
+            if (l.app && /android|iphone|ipad|ipod/i.test(navigator.userAgent)) {
+              e.preventDefault();
+              window.location.href = l.app;
+            }
+          }}
           aria-label={`Ndaje në ${l.name}`}
           title={l.name}
           className={`${button} ${compact ? "size-9 justify-center" : "px-3.5 py-2"}`}
