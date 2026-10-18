@@ -29,6 +29,10 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/banner/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=2592000, immutable" }],
+      },
+      {
         source: "/hadithe/:id/karta",
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, s-maxage=604800" }],
       },

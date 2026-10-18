@@ -66,16 +66,6 @@
   .icon-3d-shadow {
     transform-origin: 32px 60px;
   }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .icon-3d:not(.icon-3d-still) .icon-3d-body {
-      animation: float 4s ease-in-out infinite;
-    }
-
-    .icon-3d-shadow {
-      animation: float-shadow 4s ease-in-out infinite;
-    }
-  }
 }
 
 [data-tr-text],

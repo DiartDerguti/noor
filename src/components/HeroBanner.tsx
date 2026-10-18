@@ -43,11 +43,15 @@ const INTERVAL = 6000;
 export default function HeroBanner() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [loaded, setLoaded] = useState(1);
 
   useEffect(() => {
     if (paused) return;
     const timer = setTimeout(
-      () => setIndex((i) => (i + 1) % SLIDES.length),
+      () => {
+        setIndex((i) => (i + 1) % SLIDES.length);
+        setLoaded((n) => Math.min(SLIDES.length, n + 1));
+      },
       INTERVAL,
     );
     return () => clearTimeout(timer);
@@ -61,13 +65,15 @@ export default function HeroBanner() {
       onMouseLeave={() => setPaused(false)}
       className="relative isolate -mt-16 h-[72vh] min-h-[520px] overflow-hidden sm:h-[80vh] sm:min-h-[620px]"
     >
-      {SLIDES.map((s, i) => (
+      {SLIDES.slice(0, Math.max(loaded, index + 1) + 1).map((s, i) => (
         <Image
           key={s.src}
           src={s.src}
           alt={s.place}
           fill
           priority={i === 0}
+          fetchPriority={i === 0 ? "high" : "low"}
+          quality={70}
           sizes="100vw"
           style={{ objectPosition: s.position }}
           className={`-z-20 scale-[1.04] object-cover transition-[opacity,transform] duration-[1400ms] ease-out ${
