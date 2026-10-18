@@ -143,7 +143,7 @@ export default function Header() {
       </header>
 
       <div
-        className={`pattern bg-paper fixed inset-x-0 top-16 bottom-0 z-20 transition-all duration-300 sm:hidden ${
+        className={`pattern bg-paper fixed inset-x-0 top-16 bottom-0 z-40 transition-all duration-300 sm:hidden ${
           open ? "visible opacity-100" : "invisible -translate-y-2 opacity-0"
         }`}
       >
