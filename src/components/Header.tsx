@@ -123,7 +123,7 @@ export default function Header() {
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Mbyll menunë" : "Hap menunë"}
             aria-expanded={open}
-            className="border-line relative ml-auto grid size-10 place-items-center rounded-full border sm:hidden"
+            className="relative ml-auto grid size-10 place-items-center rounded-full border border-white/50 bg-black/20 backdrop-blur sm:hidden"
           >
             <span
               className={`bg-ink absolute h-0.5 w-4.5 rounded-full transition-transform duration-300 ${

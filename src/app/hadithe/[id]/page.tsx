@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SITE_URL, pageMeta } from "@/lib/site";
-import { SOURCE_LABEL, getHadith } from "@/lib/hadith";
+import { SOURCE_LABEL, getHadith, hadithAsText } from "@/lib/hadith";
 import SourceBadge from "@/components/SourceBadge";
 import BackLink from "@/components/BackLink";
 import ShareBar from "@/components/ShareBar";
@@ -26,7 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-xs font-medium tracking-[0.25em] text-gold uppercase">{children}</h2>;
+  return (
+    <h2 className="text-gold text-xs font-medium tracking-[0.25em] uppercase">
+      {children}
+    </h2>
+  );
 }
 
 export default async function HadithPage({ params }: Props) {
@@ -37,12 +41,12 @@ export default async function HadithPage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-6xl px-4">
-      <header className="max-w-3xl pt-6 pb-10 sm:pt-10">
+      <header className="pt-6 pb-10 sm:pt-10">
         <BackLink href="/hadithe" label="Hadithe" />
         <div>
           <SourceBadge source={hadith.source} />
         </div>
-        <h1 className="mt-5 font-serif text-3xl leading-tight font-semibold text-balance sm:text-[2.6rem]">
+        <h1 className="mt-5 font-serif text-3xl leading-tight font-semibold sm:text-[2.6rem]">
           {hadith.title}
         </h1>
       </header>
@@ -50,15 +54,17 @@ export default async function HadithPage({ params }: Props) {
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
         <div className="space-y-12">
           {hadith.arabic && (
-            <div className="relative overflow-hidden rounded-[2rem] border border-gold/30 bg-card px-6 py-8 sm:px-10 sm:py-10">
-              <div className="absolute -top-20 -left-20 size-56 rounded-full bg-gold/10 blur-3xl" />
-              <p className="arabic relative text-[1.7rem] leading-[2.2] text-ink sm:text-[2rem]">{hadith.arabic}</p>
+            <div className="border-gold/30 bg-card relative overflow-hidden rounded-[2rem] border px-6 py-8 sm:px-10 sm:py-10">
+              <div className="bg-gold/10 absolute -top-20 -left-20 size-56 rounded-full blur-3xl" />
+              <p className="arabic text-ink relative text-[1.7rem] leading-[2.2] sm:text-[2rem]">
+                {hadith.arabic}
+              </p>
             </div>
           )}
 
           <section>
             <Label>Hadithi</Label>
-            <p className="mt-4 border-l-2 border-gold/60 pl-5 font-serif text-xl leading-relaxed whitespace-pre-line text-ink sm:text-[1.35rem]">
+            <p className="border-gold/60 text-ink mt-4 border-l-2 pl-5 font-serif text-xl leading-relaxed whitespace-pre-line sm:text-[1.35rem]">
               {hadith.text}
             </p>
           </section>
@@ -66,7 +72,9 @@ export default async function HadithPage({ params }: Props) {
           {hadith.explanation && (
             <section>
               <Label>Shpjegimi</Label>
-              <p className="mt-4 text-[1.05rem] leading-[1.85] whitespace-pre-line text-ink/85">{hadith.explanation}</p>
+              <p className="text-ink/85 mt-4 text-[1.05rem] leading-[1.85] whitespace-pre-line">
+                {hadith.explanation}
+              </p>
             </section>
           )}
 
@@ -75,11 +83,16 @@ export default async function HadithPage({ params }: Props) {
               <Label>Çfarë mësojmë?</Label>
               <ol className="mt-5 space-y-3">
                 {hadith.lessons.map((lesson, i) => (
-                  <li key={i} className="flex gap-4 rounded-2xl border border-line bg-card p-5">
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-emerald-soft text-sm font-semibold text-emerald-deep tabular-nums">
+                  <li
+                    key={i}
+                    className="border-line bg-card flex gap-4 rounded-2xl border p-5"
+                  >
+                    <span className="bg-emerald-soft text-emerald-deep grid size-8 shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums">
                       {i + 1}
                     </span>
-                    <span className="leading-relaxed text-ink/90">{lesson}</span>
+                    <span className="text-ink/90 leading-relaxed">
+                      {lesson}
+                    </span>
                   </li>
                 ))}
               </ol>
@@ -88,15 +101,19 @@ export default async function HadithPage({ params }: Props) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-          <section className="rounded-[2rem] border border-line bg-card p-6">
-            <Label>Ndaje</Label>
-            <p className="mt-2 text-sm text-muted">Dërgoje te të afërmit ose vendose si story.</p>
-            <div className="mt-5">
-              <ShareBar url={url} text={hadith.title} source={SOURCE_LABEL[hadith.source]} card={`/hadithe/${hadith.id}/karta`} />
+          <section className="border-line bg-card rounded-[2rem] border p-6">
+            <div>
+              <ShareBar
+                url={url}
+                text={hadith.title}
+                source={SOURCE_LABEL[hadith.source]}
+                card={`/hadithe/${hadith.id}/karta`}
+                full={hadithAsText(hadith, url)}
+              />
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-line bg-card p-6 text-sm">
+          <section className="border-line bg-card rounded-[2rem] border p-6 text-sm">
             <Label>Burimi</Label>
             <dl className="mt-4 space-y-3">
               <div>
@@ -109,14 +126,16 @@ export default async function HadithPage({ params }: Props) {
               </div>
               <div>
                 <dt className="text-muted">Përkthimi, shpjegimi dhe mësimet</dt>
-                <dd className="mt-0.5 font-medium">Enciklopedia e Haditheve Profetike të Përkthyera (HadeethEnc)</dd>
+                <dd className="mt-0.5 font-medium">
+                  Enciklopedia e Haditheve Profetike të Përkthyera (HadeethEnc)
+                </dd>
               </div>
             </dl>
             <a
               href={hadith.url}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 inline-block font-medium text-emerald-deep underline-offset-4 hover:underline"
+              className="text-emerald-deep mt-5 inline-block font-medium underline-offset-4 hover:underline"
             >
               Shiko në HadeethEnc ↗
             </a>

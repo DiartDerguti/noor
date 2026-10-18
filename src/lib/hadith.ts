@@ -144,3 +144,15 @@ export async function getCategoryPage(categoryId: string, page: number) {
     lastPage: Number(list.meta.last_page) || 1,
   };
 }
+
+export function hadithAsText(hadith: Hadith, url: string) {
+  return [
+    hadith.text,
+    hadith.explanation && `Shpjegimi:\n${hadith.explanation}`,
+    hadith.lessons.length > 0 && `Çfarë mësojmë:\n${hadith.lessons.map((l) => `• ${l}`).join("\n")}`,
+    `Burimi: ${hadith.attribution} · ${hadith.grade} (HadeethEnc)`,
+    url,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}

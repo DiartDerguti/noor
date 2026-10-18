@@ -2,7 +2,7 @@ import Link from "next/link";
 import { DEFAULT_TRANSLATION, ayahOfTheDay, getAyah, translationName } from "@/lib/quran";
 import HeroBanner from "@/components/HeroBanner";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
-import { formatHijri, getHijriToday, getUpcomingEvents } from "@/lib/hijri";
+import { getHijriToday, getUpcomingEvents } from "@/lib/hijri";
 import { DEFAULT_CITY, getTimings } from "@/lib/prayer";
 import Icon3D, { type Icon3DName } from "@/components/Icon3D";
 import PrayerTimes from "@/components/PrayerTimes";
@@ -69,7 +69,7 @@ export default async function Home() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <HeroBanner hijri={hijri ? formatHijri(hijri) : undefined} />
+      <HeroBanner />
 
       <div className="relative z-10 mx-auto -mt-12 max-w-6xl px-4 sm:-mt-16">
         <PrayerTimes initial={timings} />

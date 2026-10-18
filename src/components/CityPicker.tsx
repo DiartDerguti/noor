@@ -51,7 +51,7 @@ export default function CityPicker({
   }, [search]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative w-full sm:w-auto">
       <button
         type="button"
         onClick={() => {
@@ -60,7 +60,7 @@ export default function CityPicker({
         }}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`bg-paper/60 flex items-center gap-2.5 rounded-full border py-2 pr-3 pl-2.5 text-left transition-colors ${
+        className={`bg-paper/60 flex w-full items-center gap-2.5 rounded-full border py-2 pr-3 pl-2.5 text-left transition-colors sm:w-auto ${
           open ? "border-gold" : "border-line hover:border-gold/60"
         }`}
       >
@@ -78,7 +78,7 @@ export default function CityPicker({
         </span>
         <svg
           viewBox="0 0 24 24"
-          className={`text-muted ml-1 size-4 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-muted ml-auto size-4 transition-transform sm:ml-1 ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -89,7 +89,7 @@ export default function CityPicker({
       </button>
 
       {open && (
-        <div className="border-line bg-card absolute right-0 z-40 mt-2 w-72 overflow-hidden rounded-2xl border shadow-2xl shadow-black/50">
+        <div className="border-line bg-card absolute right-0 left-0 z-40 mt-2 w-auto overflow-hidden rounded-2xl border shadow-2xl shadow-black/50 sm:left-auto sm:w-72">
           <div className="border-line border-b p-2">
             <input
               autoFocus

@@ -57,10 +57,6 @@ function remaining(seconds: number) {
   return m === 0 ? `edhe ${h} orë` : `edhe ${h} orë ${m} min`;
 }
 
-function duration(from: string, to: string) {
-  const minutes = (toSeconds(to) - toSeconds(from)) / 60;
-  return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}`;
-}
 
 const SLOTS = [
   { id: "Fajr", label: "Imsaku" },
@@ -72,12 +68,19 @@ const SLOTS = [
 ] as const;
 
 export default function PrayerTimes({ initial }: { initial: Timings | null }) {
-  const cityId = useSyncExternalStore(subscribeCity, readCity, () => DEFAULT_CITY);
-  const [loaded, setLoaded] = useState<{ city: string; timings: Timings | null }>({
+  const cityId = useSyncExternalStore(
+    subscribeCity,
+    readCity,
+    () => DEFAULT_CITY,
+  );
+  const [loaded, setLoaded] = useState<{
+    city: string;
+    timings: Timings | null;
+  }>({
     city: DEFAULT_CITY,
     timings: initial,
   });
-  const { city, country } = findCity(cityId)!;
+  const { country } = findCity(cityId)!;
   const now = useSyncExternalStore(
     subscribeClock,
     () => secondsNow(country.timezone),
@@ -100,32 +103,52 @@ export default function PrayerTimes({ initial }: { initial: Timings | null }) {
   let next: { id: string; in: number } | null = null;
   if (t && now !== null) {
     const slot = SLOTS.find((s) => toSeconds(t[s.id]) > now);
-    next = slot ? { id: slot.id, in: toSeconds(t[slot.id]) - now } : { id: "Fajr", in: toSeconds(t.Fajr) + 86400 - now };
+    next = slot
+      ? { id: slot.id, in: toSeconds(t[slot.id]) - now }
+      : { id: "Fajr", in: toSeconds(t.Fajr) + 86400 - now };
   }
 
   return (
-    <section className="rounded-[2rem] border border-line bg-card px-6 py-8 shadow-2xl shadow-black/40 sm:px-10 sm:py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="font-serif text-2xl font-semibold sm:text-3xl">Kohët e namazit</h2>
-          <p className="mt-1 text-sm text-muted">
-            Sot në {city.name}
-            {t && <> · dita zgjat {duration(t.Sunrise, t.Maghrib)} orë</>}
-          </p>
-        </div>
+    <section className="border-line bg-card rounded-[2rem] border px-6 py-8 shadow-2xl shadow-black/40 sm:px-10 sm:py-10">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="font-serif text-2xl font-semibold sm:text-3xl">
+          Kohët e namazit
+        </h2>
         <CityPicker value={cityId} onChange={saveCity} />
       </div>
 
-      <ul className="mt-10 grid grid-cols-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:divide-x lg:divide-line">
+      <ul className="divide-line mt-6 divide-y sm:mt-10 sm:grid sm:grid-cols-3 sm:gap-y-8 sm:divide-y-0 lg:grid-cols-6 lg:divide-x">
         {SLOTS.map((s) => {
           const active = next?.id === s.id;
           return (
-            <li key={s.id} className="lg:px-6 lg:first:pl-0">
-              <p className={`text-sm ${active ? "font-medium text-gold" : "text-muted"}`}>{s.label}</p>
-              <p className={`mt-2 font-serif text-3xl font-semibold tabular-nums sm:text-4xl ${active ? "text-gold" : ""}`}>
+            <li
+              key={s.id}
+              className={`flex items-center justify-between gap-4 py-3.5 sm:block sm:py-0 lg:px-6 lg:first:pl-0 ${
+                active
+                  ? "bg-gold-soft -mx-3 rounded-xl px-3 sm:mx-0 sm:bg-transparent sm:px-0 lg:px-6"
+                  : ""
+              }`}
+            >
+              <div>
+                <p
+                  className={`text-sm ${active ? "text-gold font-medium" : "text-muted"}`}
+                >
+                  {s.label}
+                </p>
+                {active && next && (
+                  <p className="text-gold/80 mt-0.5 text-xs sm:hidden">
+                    {remaining(next.in)}
+                  </p>
+                )}
+              </div>
+              <p
+                className={`font-serif text-2xl font-semibold tabular-nums sm:mt-2 sm:text-4xl ${active ? "text-gold" : ""}`}
+              >
                 {t ? t[s.id] : "--:--"}
               </p>
-              <p className="mt-1 h-5 text-xs text-gold/80">{active && next ? remaining(next.in) : ""}</p>
+              <p className="text-gold/80 mt-1 hidden h-5 text-xs sm:block">
+                {active && next ? remaining(next.in) : ""}
+              </p>
             </li>
           );
         })}
