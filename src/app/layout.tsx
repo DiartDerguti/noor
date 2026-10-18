@@ -8,10 +8,21 @@ const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" 
 const literata = Literata({ subsets: ["latin", "latin-ext"], variable: "--font-literata" });
 const amiri = Amiri({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-amiri" });
 
+const description =
+  "Kurani me përkthimet shqip të Hasan Efendi Nahit, Sherif Ahmetit dhe Feti Mehdiut, dhe hadithe nga Buhariu e Muslimi.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://noor-al.netlify.app"),
   title: { default: "Noor · Kurani dhe Hadithi në shqip", template: "%s · Noor" },
-  description:
-    "Kurani me përkthimet shqip të Hasan Efendi Nahit, Sherif Ahmetit dhe Feti Mehdiut, dhe hadithe nga Buhariu e Muslimi.",
+  description,
+  openGraph: {
+    title: "Noor · Kurani dhe Hadithi në shqip",
+    description,
+    url: "/",
+    siteName: "Noor",
+    locale: "sq_AL",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
