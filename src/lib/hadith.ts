@@ -97,6 +97,38 @@ export async function getHadith(id: string) {
   }
 }
 
+export const SEARCH_LIMIT = 30;
+
+export function simplify(text: string) {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export async function searchCategory(categoryId: string, query: string) {
+  const q = simplify(query);
+  if (!q) return { hadiths: [], matches: 0 };
+
+  const list = await get<{ data: { id: string; title: string }[] }>(
+    `/hadeeths/list/?language=${LANG}&category_id=${encodeURIComponent(categoryId)}&page=1&per_page=1000`,
+  );
+  const words = q.split(" ");
+  const matches = list.data.filter((h) => {
+    const title = simplify(h.title);
+    return words.every((w) => title.includes(w));
+  });
+  const hadiths = await Promise.all(matches.slice(0, SEARCH_LIMIT).map((h) => getHadith(h.id)));
+
+  return {
+    hadiths: hadiths.filter((h): h is Hadith => h !== null),
+    matches: matches.length,
+  };
+}
+
 export async function getCategoryPage(categoryId: string, page: number) {
   const list = await get<{ data: { id: string }[]; meta: { last_page: number } }>(
     `/hadeeths/list/?language=${LANG}&category_id=${encodeURIComponent(categoryId)}&page=${page}&per_page=${PER_PAGE}`,

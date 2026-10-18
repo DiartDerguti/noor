@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCategories, getCategoryPage } from "@/lib/hadith";
+import { SEARCH_LIMIT, getCategories, getCategoryPage, searchCategory } from "@/lib/hadith";
 import PageHeading from "@/components/PageHeading";
 import HadithAnswer from "@/components/HadithAnswer";
 import SourceBadge from "@/components/SourceBadge";
 
 type Props = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ faqe?: string }>;
+  searchParams: Promise<{ faqe?: string; q?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -22,8 +22,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const category = (await getCategories()).find((c) => c.id === id);
   if (!category) notFound();
 
-  const page = Math.max(1, Number((await searchParams).faqe) || 1);
-  const { hadiths, lastPage } = await getCategoryPage(id, page);
+  const { faqe, q = "" } = await searchParams;
+  const query = q.trim();
+  const page = Math.max(1, Number(faqe) || 1);
+  const { hadiths, lastPage, matches } = query
+    ? { ...(await searchCategory(id, query)), lastPage: 1 }
+    : { ...(await getCategoryPage(id, page)), matches: 0 };
 
   return (
     <div className="mx-auto max-w-3xl px-4">
@@ -34,6 +38,33 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         title={category.title}
         text="Hap një pyetje për të lexuar hadithin, shpjegimin dhe çfarë mësojmë prej tij."
       />
+
+      <form className="mb-6 flex gap-2">
+        <input
+          type="search"
+          name="q"
+          defaultValue={query}
+          placeholder="Kërko në këtë temë, p.sh. namaz, agjërim…"
+          className="min-w-0 flex-1 rounded-2xl border border-line bg-card px-5 py-3.5 outline-none placeholder:text-muted focus:border-gold"
+        />
+        <button
+          type="submit"
+          className="rounded-2xl bg-emerald-deep px-5 font-medium text-paper transition-opacity hover:opacity-90"
+        >
+          Kërko
+        </button>
+      </form>
+
+      {query && (
+        <p className="mb-4 text-sm text-muted">
+          {hadiths.length} rezultate për „{query}“
+          {matches > SEARCH_LIMIT && " · shfaqen të parat, shto një fjalë tjetër për t'i ngushtuar"}
+          {" · "}
+          <Link href={`/hadithe/tema/${id}`} className="text-emerald-deep underline-offset-4 hover:underline">
+            Pastro kërkimin
+          </Link>
+        </p>
+      )}
 
       <div className="space-y-3">
         {hadiths.map((h) => (
@@ -65,7 +96,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       {hadiths.length === 0 && (
         <p className="rounded-2xl border border-dashed border-line p-8 text-center text-muted">
-          Në këtë faqe nuk ka hadithe nga Buhariu ose Muslimi. Provo faqen tjetër.
+          {query
+            ? "Nuk u gjet asnjë hadith nga Buhariu ose Muslimi. Provo një fjalë tjetër."
+            : "Në këtë faqe nuk ka hadithe nga Buhariu ose Muslimi. Provo faqen tjetër."}
         </p>
       )}
 
