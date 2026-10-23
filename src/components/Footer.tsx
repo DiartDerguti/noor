@@ -16,6 +16,9 @@ const COLUMNS = [
     title: "Mëso",
     links: [
       { href: "/hadithe", label: "Hadithe" },
+      { href: "/hadithe/rijadus-salihin", label: "Rijadus Salihin" },
+      { href: "/mburoja", label: "Mburoja e Muslimanit" },
+      { href: "/emrat", label: "99 Emrat e Allahut" },
       { href: "/meso", label: "Kuizi" },
       { href: "/rreth", label: "Burimet" },
     ],
@@ -26,6 +29,8 @@ const COLUMNS = [
       { href: "https://quran.com", label: "Quran.com" },
       { href: "https://tanzil.net", label: "Tanzil" },
       { href: "https://hadeethenc.com", label: "HadeethEnc" },
+      { href: "https://mburojaemuslimanit.com", label: "Mburoja e Muslimanit" },
+      { href: "https://mburoja.al", label: "Mburoja.al" },
       { href: "https://aladhan.com", label: "Aladhan" },
     ],
   },

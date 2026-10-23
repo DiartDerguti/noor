@@ -14,11 +14,44 @@
   --color-emerald-soft: #183128;
   --color-gold: #d4b178;
   --color-gold-soft: #2a2519;
+
+  --animate-in-fade: in-fade 0.25s ease-out;
+  --animate-in-up: in-up 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+
+  @keyframes in-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes in-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
 }
 
 @layer base {
   :root {
     color-scheme: dark;
+    --hisn-ar: 1.75rem;
+    --hisn-tx: 1rem;
+  }
+
+  :root[data-hisn-size="0"] {
+    --hisn-ar: 1.4rem;
+    --hisn-tx: 0.875rem;
+  }
+
+  :root[data-hisn-size="2"] {
+    --hisn-ar: 2.1rem;
+    --hisn-tx: 1.125rem;
+  }
+
+  :root[data-hisn-size="3"] {
+    --hisn-ar: 2.5rem;
+    --hisn-tx: 1.25rem;
   }
 
   body {

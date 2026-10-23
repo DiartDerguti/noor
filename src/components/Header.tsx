@@ -16,6 +16,8 @@ const NAV: { href: string; label: string; arabic: string; icon: Icon3DName }[] =
   [
     { href: "/kurani", label: "Kurani", arabic: "القرآن", icon: "book" },
     { href: "/hadithe", label: "Hadithe", arabic: "الحديث", icon: "scroll" },
+    { href: "/mburoja", label: "Mburoja", arabic: "حصن المسلم", icon: "shield" },
+    { href: "/emrat", label: "Emrat e Allahut", arabic: "الأسماء الحسنى", icon: "star" },
     { href: "/meso", label: "Mëso", arabic: "تعلّم", icon: "cap" },
     { href: "/rreth", label: "Burimet", arabic: "المصادر", icon: "seal" },
   ];
@@ -91,7 +93,7 @@ export default function Header() {
 
           <nav
             ref={navRef}
-            className="border-line bg-card/70 relative ml-auto hidden items-center gap-1 rounded-full border p-1 text-sm shadow-lg shadow-black/20 sm:flex"
+            className="border-line bg-card/70 relative ml-auto hidden items-center gap-1 rounded-full border p-1 text-sm shadow-lg shadow-black/20 lg:flex"
           >
             <span
               ref={pillRef}
@@ -123,7 +125,7 @@ export default function Header() {
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Mbyll menunë" : "Hap menunë"}
             aria-expanded={open}
-            className="relative ml-auto grid size-10 place-items-center rounded-full border border-white/50 bg-black/20 backdrop-blur sm:hidden"
+            className="relative ml-auto grid size-10 place-items-center rounded-full border border-white/50 bg-black/20 backdrop-blur lg:hidden"
           >
             <span
               className={`bg-ink absolute h-0.5 w-4.5 rounded-full transition-transform duration-300 ${
@@ -143,7 +145,7 @@ export default function Header() {
       </header>
 
       <div
-        className={`pattern bg-paper fixed inset-x-0 top-16 bottom-0 z-40 transition-all duration-300 sm:hidden ${
+        className={`pattern bg-paper fixed inset-x-0 top-16 bottom-0 z-40 transition-all duration-300 lg:hidden ${
           open ? "visible opacity-100" : "invisible -translate-y-2 opacity-0"
         }`}
       >

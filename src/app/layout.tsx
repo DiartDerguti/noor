@@ -3,6 +3,7 @@ import { Inter, Literata, Scheherazade_New } from "next/font/google";
 import localFont from "next/font/local";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BottomNav from "@/components/BottomNav";
 import { RegisterServiceWorker } from "@/components/InstallApp";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -80,7 +81,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("noor:tr");if(t)document.documentElement.dataset.tr=t}catch(e){}`,
+            __html: `try{var d=document.documentElement,t=localStorage.getItem("noor:tr"),s=localStorage.getItem("noor:hisn-size");if(t)d.dataset.tr=t;if(s)d.dataset.hisnSize=s}catch(e){}`,
           }}
         />
       </head>
@@ -88,6 +89,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <BottomNav />
         <RegisterServiceWorker />
       </body>
     </html>

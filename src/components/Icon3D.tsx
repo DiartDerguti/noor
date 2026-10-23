@@ -1,5 +1,7 @@
+import { useId } from "react";
+
 export type Icon3DName =
-  "moon" | "mosque" | "calendar" | "book" | "scroll" | "cap" | "seal";
+  "moon" | "mosque" | "calendar" | "book" | "scroll" | "cap" | "seal" | "shield" | "star" | "home";
 
 function Defs({ id }: { id: string }) {
   return (
@@ -162,6 +164,38 @@ function Shape({ name, id }: { name: Icon3DName; id: string }) {
           />
         </>
       );
+    case "shield":
+      return (
+        <>
+          <path d="M32 5 54 13v17c0 14-9 24-22 29C19 54 10 44 10 30V13Z" fill={gold} />
+          <path d="M32 10 49 16.5V30c0 11-7 19.5-17 23.5C22 49.5 15 41 15 30V16.5Z" fill={green} />
+          <path d="M36 21a10 10 0 1 0 7 15.5A8 8 0 1 1 36 21Z" fill={gold} />
+          <path d="m25 25 1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.4-2.5 1.4.5-2.8-2-2 2.8-.4Z" fill="#fff4d6" />
+          <path d="M15 17 32 10.5 49 17v4L32 14.5 15 21Z" fill={shine} />
+        </>
+      );
+    case "star":
+      return (
+        <>
+          <rect x="14" y="14" width="36" height="36" rx="3" fill={gold} />
+          <rect x="14" y="14" width="36" height="36" rx="3" fill={gold} transform="rotate(45 32 32)" />
+          <circle cx="32" cy="32" r="13" fill={green} />
+          <circle cx="32" cy="32" r="9.5" fill="none" stroke="#f6dfa8" strokeOpacity=".6" strokeWidth="1.2" />
+          <text x="32" y="36.5" textAnchor="middle" fontSize="11" fontWeight="700" fill="#fff4d6" fontFamily="serif">
+            99
+          </text>
+          <path d="M14 17a3 3 0 0 1 3-3h30a3 3 0 0 1 3 3v3H14Z" fill={shine} />
+        </>
+      );
+    case "home":
+      return (
+        <>
+          <path d="M32 8 6 30h7v24h38V30h7Z" fill={green} />
+          <path d="M32 8 6 30h7l19-16 19 16h7Z" fill={gold} />
+          <path d="M27 54V41a5 5 0 0 1 10 0v13Z" fill={gold} />
+          <path d="M13 30h38v4H13Z" fill={shine} />
+        </>
+      );
     case "cap":
       return (
         <>
@@ -191,7 +225,8 @@ export default function Icon3D({
   className?: string;
   still?: boolean;
 }) {
-  const id = `i3d-${name}`;
+  // Unique per instance: a gradient defined inside a hidden copy (e.g. the desktop nav on mobile) does not render.
+  const id = `i3d-${name}${useId().replace(/[^\w-]/g, "")}`;
   return (
     <svg
       viewBox="0 0 64 64"

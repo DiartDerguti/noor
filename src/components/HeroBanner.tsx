@@ -10,7 +10,7 @@ const SLIDES = [
   { src: "/banner/xhamia-4.webp", position: "center 55%" },
 ];
 
-const INTERVAL = 6000;
+const INTERVAL = 3500;
 
 export default function HeroBanner() {
   const [index, setIndex] = useState(0);
