@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 const SLIDES = [
   { src: "/banner/xhamia-1.webp", position: "center 45%" },
   { src: "/banner/xhamia-2.webp", position: "center 50%" },
-  { src: "/banner/xhamia-3.webp", position: "center 60%" },
-  { src: "/banner/xhamia-4.webp", position: "center 55%" },
 ];
 
 const INTERVAL = 3500;
