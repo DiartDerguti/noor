@@ -3,8 +3,6 @@
 import { useSyncExternalStore } from "react";
 
 const FAV_KEY = "noor:hisn-fav";
-const SIZE_KEY = "noor:hisn-size";
-export const TEXT_SIZES = 4;
 
 function read<T>(key: string, fallback: T): T {
   try {
@@ -25,7 +23,7 @@ const listeners = new Set<() => void>();
 function subscribe(listener: () => void) {
   listeners.add(listener);
   const onStorage = (e: StorageEvent) => {
-    if (e.key === FAV_KEY || e.key === SIZE_KEY) {
+    if (e.key === FAV_KEY) {
       favCache = null;
       listener();
     }
@@ -57,30 +55,9 @@ export function toggleFavorite(n: number) {
   emit();
 }
 
-function getSize() {
-  return Math.min(TEXT_SIZES - 1, Math.max(0, Number(read(SIZE_KEY, 1)) || 0));
-}
-
-export function useTextSize() {
-  return useSyncExternalStore(subscribe, getSize, () => 1);
-}
-
-export function cycleTextSize() {
-  const next = (getSize() + 1) % TEXT_SIZES;
-  write(SIZE_KEY, next);
-  document.documentElement.dataset.hisnSize = String(next);
-  emit();
-}
-
 export const fold = (s: string) =>
   s
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[’'`‘]/g, "");
-
-export function dayNumber(total: number, date = new Date()) {
-  const start = Date.UTC(date.getFullYear(), 0, 0);
-  const day = Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - start) / 86400000);
-  return ((day + date.getFullYear()) % total) + 1;
-}

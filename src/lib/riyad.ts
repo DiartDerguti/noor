@@ -2,7 +2,7 @@ import data from "@/data/riyad.json";
 
 export type RiyadHadith = { n: string; text: string; by: string };
 
-export const RIYAD_PER_PAGE = 25;
+export const RIYAD_PER_PAGE = 24;
 export const RIYAD_SEARCH_LIMIT = 60;
 export const RIYAD_SOURCE = "https://mburoja.al/hadithe/";
 
@@ -23,7 +23,7 @@ const fold = (s: string) =>
   s
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[’'`‘]/g, "");
 
 export function searchRiyad(query: string) {

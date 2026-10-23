@@ -35,23 +35,15 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --hisn-ar: 1.75rem;
-    --hisn-tx: 1rem;
+    --hisn-ar: 1.3rem;
+    --hisn-tx: 0.95rem;
   }
 
-  :root[data-hisn-size="0"] {
-    --hisn-ar: 1.4rem;
-    --hisn-tx: 0.875rem;
-  }
-
-  :root[data-hisn-size="2"] {
-    --hisn-ar: 2.1rem;
-    --hisn-tx: 1.125rem;
-  }
-
-  :root[data-hisn-size="3"] {
-    --hisn-ar: 2.5rem;
-    --hisn-tx: 1.25rem;
+  @media (min-width: 640px) {
+    :root {
+      --hisn-ar: 1.5rem;
+      --hisn-tx: 1rem;
+    }
   }
 
   body {

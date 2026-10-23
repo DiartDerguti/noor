@@ -81,7 +81,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var d=document.documentElement,t=localStorage.getItem("noor:tr"),s=localStorage.getItem("noor:hisn-size");if(t)d.dataset.tr=t;if(s)d.dataset.hisnSize=s}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("noor:tr");if(t)document.documentElement.dataset.tr=t}catch(e){}`,
           }}
         />
       </head>

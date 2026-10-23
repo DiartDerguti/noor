@@ -28,6 +28,11 @@ export function getChapter(n: number) {
   return chapters[n - 1];
 }
 
+export function getDuaOfTheDay(date = new Date()) {
+  const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000);
+  return chapters[(day * 31) % chapters.length];
+}
+
 export function audioUrl(file: string) {
   return `/mburoja/${file}`;
 }

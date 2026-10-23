@@ -26,21 +26,21 @@ export default function RiyadList({
         </p>
       )}
 
-      <ol className="space-y-3">
+      <ol className="grid gap-4 md:grid-cols-2">
         {hadiths.map((h) => (
           <li
             key={h.n}
             id={`h-${h.n.replace(/\D+/g, "-")}`}
-            className="border-line bg-card scroll-mt-24 rounded-2xl border p-5 sm:p-6"
+            className="border-line bg-card hover:border-gold/50 flex scroll-mt-24 flex-col rounded-[1.75rem] border p-6 transition-colors sm:p-7"
           >
-            <div className="flex items-start gap-4">
-              <span className="border-gold/40 bg-gold-soft text-gold grid min-w-11 shrink-0 place-items-center rounded-xl border px-2 py-1.5 font-serif text-sm tabular-nums">
-                {h.n}
+            <div className="flex items-center justify-between gap-3">
+              <span className="border-gold/40 bg-gold-soft text-gold rounded-full border px-3 py-1 font-serif text-sm tabular-nums">
+                Nr. {h.n}
               </span>
-              <p className="text-ink/90 flex-1 leading-relaxed text-pretty">{h.text}</p>
               <CopyButton label="Kopjo hadithin" text={`${h.text}\n— ${h.by} (Rijadus Salihin, nr. ${h.n})`} />
             </div>
-            <p className="text-muted mt-3 pl-15 text-sm italic">— {h.by}</p>
+            <p className="text-ink/90 mt-4 flex-1 leading-relaxed text-pretty">{h.text}</p>
+            <p className="border-line text-emerald-deep mt-5 border-t pt-4 text-sm">— {h.by}</p>
           </li>
         ))}
       </ol>

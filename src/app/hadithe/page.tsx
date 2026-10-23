@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { pageMeta } from "@/lib/site";
 import Link from "next/link";
 import { getCategories } from "@/lib/hadith";
-import PageHeading from "@/components/PageHeading";
 import Icon3D from "@/components/Icon3D";
 import { RIYAD_TOTAL } from "@/lib/riyad";
 
@@ -16,12 +15,8 @@ export default async function HadithsPage() {
   const categories = await getCategories();
 
   return (
-    <div className="mx-auto max-w-6xl px-4">
-      <PageHeading
-        arabic="الحديث النبوي"
-        title="Hadithe në shqip"
-        text="Rijadus Salihin i Imam Neveviut, si dhe tema me hadithe nga Sahihu i Buhariut e i Muslimit me shpjegim dhe mësimet që nxirren prej tyre."
-      />
+    <div className="mx-auto max-w-6xl px-4 pt-8 sm:pt-10">
+      <h1 className="sr-only">Hadithe në shqip</h1>
 
       <Link
         href="/hadithe/rijadus-salihin"

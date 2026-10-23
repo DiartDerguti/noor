@@ -24,10 +24,6 @@ export default function HisnPage() {
       <section className="pattern border-line relative overflow-hidden rounded-[2rem] border p-8">
         <p className="arabic text-gold text-left text-4xl leading-normal">حصن المسلم</p>
         <h2 className="mt-1 font-serif text-3xl font-semibold tracking-tight">Lutjet e muslimanit për çdo ditë</h2>
-        <p className="text-muted mt-3 max-w-xl leading-relaxed">
-          Zgjidh një dua nga lista. Secila ka tekstin arabisht, transliterimin, përkthimin shqip, burimin dhe audion, të
-          cilën mund ta përsëritësh derisa ta mësosh përmendsh.
-        </p>
         <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-sm">
           {stats.map(([value, label]) => (
             <div key={label} className="flex items-baseline gap-2">
@@ -61,14 +57,6 @@ export default function HisnPage() {
           </li>
         ))}
       </ul>
-
-      <p className="text-muted mt-10 text-sm">
-        Teksti dhe audio janë marrë pa ndryshime nga{" "}
-        <a href={HISN_SOURCE} target="_blank" rel="noreferrer" className="text-emerald-deep underline-offset-4 hover:underline">
-          mburojaemuslimanit.com
-        </a>
-        , përkthimi shqip i librit “Hisnul Muslim”.
-      </p>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/site";
 import { getNames, NAMES_SOURCE } from "@/lib/names";
-import PageHeading from "@/components/PageHeading";
 import NamesExplorer from "@/components/NamesExplorer";
 
 export const metadata: Metadata = pageMeta({
@@ -12,12 +11,8 @@ export const metadata: Metadata = pageMeta({
 
 export default function NamesPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4">
-      <PageHeading
-        arabic="ٱلْأَسْمَاءُ ٱلْحُسْنَىٰ"
-        title="99 Emrat e Allahut"
-        text="Hap një emër për ta lexuar kuptimin, shëno ata që i ke mësuar dhe provoje veten me kartat."
-      />
+    <div className="mx-auto max-w-6xl px-4 pt-8 sm:pt-10">
+      <h1 className="sr-only">99 Emrat e Allahut</h1>
       <NamesExplorer names={getNames()} />
       <p className="text-muted mt-10 text-sm">
         Emrat dhe kuptimet janë marrë nga{" "}

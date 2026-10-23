@@ -2,28 +2,10 @@
 
 import { useState } from "react";
 import { playAll, usePlayer } from "@/lib/audio-player";
-import { cycleTextSize, toggleFavorite, useFavorites, useTextSize } from "@/lib/hisn-client";
+import { toggleFavorite, useFavorites } from "@/lib/hisn-client";
 
 const round =
   "grid size-10 place-items-center rounded-full border border-line bg-card text-muted transition-colors hover:border-gold hover:text-ink";
-
-export function TextSizeButton() {
-  const size = useTextSize();
-  return (
-    <button
-      type="button"
-      onClick={cycleTextSize}
-      aria-label={`Madhësia e tekstit: ${size + 1} nga 4`}
-      title="Madhësia e tekstit"
-      className={`${round} font-serif`}
-    >
-      <span className="flex items-end leading-none font-semibold">
-        <span className="text-sm">A</span>
-        <span className="text-[10px]">a</span>
-      </span>
-    </button>
-  );
-}
 
 export default function DuaActions({
   n,
@@ -58,6 +40,10 @@ export default function DuaActions({
         if ((e as Error).name === "AbortError") return;
       }
     }
+    copy();
+  }
+
+  async function copy() {
     try {
       await navigator.clipboard.writeText(text);
       notify("Duaja u kopjua");
@@ -84,9 +70,12 @@ export default function DuaActions({
           {allPlaying ? "Ndalo" : `Dëgjo të gjitha (${audio.length})`}
         </button>
       )}
-      <span className="lg:hidden">
-        <TextSizeButton />
-      </span>
+      <button type="button" onClick={copy} aria-label="Kopjo duanë" title="Kopjo duanë" className={round}>
+        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <rect x="9" y="9" width="11" height="11" rx="2" />
+          <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+        </svg>
+      </button>
       <button type="button" onClick={share} aria-label="Shpërndaje" title="Shpërndaje" className={round}>
         <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <circle cx="18" cy="5" r="3" />
