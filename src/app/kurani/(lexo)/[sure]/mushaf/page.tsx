@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pageMeta } from "@/lib/site";
-import { getSurah, getSurahs, revelationLabel } from "@/lib/quran";
-import TranslationTabs from "@/components/TranslationTabs";
-import { MushafPages } from "@/components/MushafPage";
-import ReaderNav from "@/components/ReaderNav";
+import { getSurahs } from "@/lib/quran";
+import { SurahView, loadSurah, parseSurah } from "@/views/quran";
 
 export const revalidate = 604800;
 
 type Props = { params: Promise<{ sure: string }> };
-
-function parseSurah(value: string) {
-  const n = Number(value);
-  return Number.isInteger(n) && n >= 1 && n <= 114 ? n : null;
-}
 
 export function generateStaticParams() {
   return [];
@@ -32,63 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default async function SurahMushafPage({ params }: Props) {
+export default async function SurahPage({ params }: Props) {
   const number = parseSurah((await params).sure);
   if (!number) notFound();
-
-  const [{ meta, ayahs }, surahs] = await Promise.all([
-    getSurah(number, []),
-    getSurahs(),
-  ]);
-  const name = (n: number) =>
-    surahs.find((s) => s.number === n)?.englishName ?? `Sureja ${n}`;
-
-  return (
-    <div className="mx-auto max-w-3xl px-4">
-      <header className="pattern relative -mx-4 overflow-hidden px-4 pt-12 pb-10 text-center sm:rounded-b-[2.5rem]">
-        <div className="from-paper/30 to-paper absolute inset-0 bg-gradient-to-b" />
-        <div className="relative">
-          <h1 className="arabic text-emerald-deep py-2 text-5xl leading-[1.9]">
-            {meta.name}
-          </h1>
-          <p className="font-serif text-2xl font-semibold">
-            {meta.englishName}{" "}
-            <span className="font-normal text-muted">({meta.albanianName})</span>
-          </p>
-          <p className="text-muted mt-2 text-sm">
-            Sureja {meta.number} · {revelationLabel(meta.revelationType)} ·{" "}
-            {meta.numberOfAyahs} ajete
-          </p>
-        </div>
-      </header>
-
-      <TranslationTabs
-        title={`${meta.englishName} (${meta.albanianName})`}
-        subtitle={`Sureja ${number} · Mushaf`}
-        basePath={`/kurani/${number}`}
-        mushafHref={`/kurani/${number}/mushaf`}
-        mushaf
-      />
-
-      <MushafPages
-        pages={[...new Set(ayahs.map((a) => a.page))]}
-        surahs={surahs}
-      />
-
-      <ReaderNav
-        label={meta.englishName}
-        position={`Sureja ${number} / 114`}
-        prev={
-          number > 1
-            ? { href: `/kurani/${number - 1}/mushaf`, label: name(number - 1) }
-            : null
-        }
-        next={
-          number < 114
-            ? { href: `/kurani/${number + 1}/mushaf`, label: name(number + 1) }
-            : null
-        }
-      />
-    </div>
-  );
+  return <SurahView {...await loadSurah(number, true)} />;
 }

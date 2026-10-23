@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pageMeta } from "@/lib/site";
-import { TOTAL_PAGES, getSection, getSurahs } from "@/lib/quran";
-import TranslationTabs from "@/components/TranslationTabs";
-import { MushafPages } from "@/components/MushafPage";
-import ReaderNav from "@/components/ReaderNav";
-import SectionHeader from "@/components/SectionHeader";
+import { TOTAL_PAGES } from "@/lib/quran";
+import { SectionView, loadSection, parseSection } from "@/views/quran";
 
 export const revalidate = 604800;
 
 type Props = { params: Promise<{ n: string }> };
 
-function parse(value: string) {
-  const n = Number(value);
-  return Number.isInteger(n) && n >= 1 && n <= TOTAL_PAGES ? n : null;
-}
+const parse = (value: string) => parseSection("faqe", value);
 
 export function generateStaticParams() {
   return [];
@@ -33,50 +27,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Reader({ params }: Props) {
   const n = parse((await params).n);
   if (!n) notFound();
-
-  const [groups, surahs] = await Promise.all([
-    getSection("page", n, []),
-    getSurahs(),
-  ]);
-  const range = groups
-    .map(
-      (g) =>
-        `${g.surah.englishName} ${g.ayahs[0].numberInSurah}–${g.ayahs[g.ayahs.length - 1].numberInSurah}`,
-    )
-    .join(", ");
-
-  return (
-    <div className="mx-auto max-w-3xl px-4">
-      <SectionHeader
-        eyebrow={`Faqja ${n} nga ${TOTAL_PAGES}`}
-        title={`Faqja ${n}`}
-        subtitle={range}
-      />
-      <TranslationTabs
-        title={`Faqja ${n}`}
-        subtitle={range}
-        basePath={`/kurani/faqe/${n}`}
-        mushafHref={`/kurani/faqe/${n}/mushaf`}
-        mushaf
-      />
-      <MushafPages
-        pages={[...new Set(groups.flatMap((g) => g.ayahs.map((a) => a.page)))]}
-        surahs={surahs}
-      />
-      <ReaderNav
-        label={`Faqja ${n}`}
-        position={range}
-        prev={
-          n > 1
-            ? { href: `/kurani/faqe/${n - 1}/mushaf`, label: `Faqja ${n - 1}` }
-            : null
-        }
-        next={
-          n < TOTAL_PAGES
-            ? { href: `/kurani/faqe/${n + 1}/mushaf`, label: `Faqja ${n + 1}` }
-            : null
-        }
-      />
-    </div>
-  );
+  return <SectionView {...await loadSection("faqe", n, true)} />;
 }

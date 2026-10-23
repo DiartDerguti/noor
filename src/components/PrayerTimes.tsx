@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { DEFAULT_CITY, findCity, getTimings, type Timings } from "@/lib/prayer";
+import { DEFAULT_CITY, findCity, getTimingsToday, type Timings } from "@/lib/prayer";
 import CityPicker from "./CityPicker";
 
 const CITY_KEY = "noor:city";
@@ -73,11 +73,14 @@ export default function PrayerTimes({ initial }: { initial: Timings | null }) {
     readCity,
     () => DEFAULT_CITY,
   );
+  // The server value can be days old when the page comes from the offline cache, so today is always loaded here.
   const [loaded, setLoaded] = useState<{
     city: string;
+    fresh: boolean;
     timings: Timings | null;
   }>({
     city: DEFAULT_CITY,
+    fresh: false,
     timings: initial,
   });
   const { country } = findCity(cityId)!;
@@ -88,15 +91,15 @@ export default function PrayerTimes({ initial }: { initial: Timings | null }) {
   );
 
   useEffect(() => {
-    if (loaded.city === cityId) return;
+    if (loaded.city === cityId && loaded.fresh) return;
     let cancelled = false;
-    getTimings(cityId).then((timings) => {
-      if (!cancelled) setLoaded({ city: cityId, timings });
+    getTimingsToday(cityId).then((timings) => {
+      if (!cancelled && (timings || loaded.city !== cityId)) setLoaded({ city: cityId, fresh: true, timings });
     });
     return () => {
       cancelled = true;
     };
-  }, [cityId, loaded.city]);
+  }, [cityId, loaded.city, loaded.fresh]);
 
   const t = loaded.city === cityId ? loaded.timings : null;
 

@@ -100,3 +100,46 @@ export async function getTimings(cityId: string, init?: RequestInit): Promise<Ti
     return null;
   }
 }
+
+// Offline: keep the whole month (and the next one) per city in localStorage.
+type MonthTimings = Record<string, Timings>;
+
+const monthKey = (cityId: string, year: number, month: number) => `noor:pt:${cityId}:${year}-${String(month).padStart(2, "0")}`;
+
+function readMonth(key: string): MonthTimings | null {
+  try {
+    return JSON.parse(localStorage.getItem(key) ?? "null");
+  } catch {
+    return null;
+  }
+}
+
+async function fetchMonth(cityId: string, year: number, month: number) {
+  const key = monthKey(cityId, year, month);
+  const cached = readMonth(key);
+  if (cached) return cached;
+  const { city, country } = findCity(cityId)!;
+  const res = await fetch(
+    `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${city.lat}&longitude=${city.lng}&method=13&timezonestring=${country.timezone}`,
+  );
+  if (!res.ok) return null;
+  const days: { date: { gregorian: { date: string } }; timings: Record<string, string> }[] = (await res.json()).data;
+  const out: MonthTimings = {};
+  for (const d of days) {
+    out[d.date.gregorian.date] = Object.fromEntries(PRAYERS.map((p) => [p.key, d.timings[p.key].slice(0, 5)])) as Timings;
+  }
+  try {
+    localStorage.setItem(key, JSON.stringify(out));
+  } catch {}
+  return out;
+}
+
+export async function getTimingsToday(cityId: string): Promise<Timings | null> {
+  const found = findCity(cityId);
+  if (!found) return null;
+  const today = todayIn(found.country.timezone);
+  const [, m, y] = today.split("-").map(Number);
+  const month = await fetchMonth(cityId, y, m).catch(() => null);
+  fetchMonth(cityId, m === 12 ? y + 1 : y, m === 12 ? 1 : m + 1).catch(() => null);
+  return month?.[today] ?? getTimings(cityId);
+}

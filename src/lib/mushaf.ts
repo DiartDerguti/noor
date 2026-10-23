@@ -17,6 +17,12 @@ type Verse = {
   words: { code_v1: string; line_number: number; char_type_name: string }[];
 };
 
+export type MushafPageData = Awaited<ReturnType<typeof getMushafPage>>;
+
+export async function getMushafPages(pages: number[]) {
+  return Promise.all(pages.map(getMushafPage));
+}
+
 export async function getMushafPage(page: number) {
   const pages = (await import("@/data/mushaf.json")).default as unknown as Record<
     string,

@@ -6,7 +6,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' https://verses.quran.foundation",
-  "connect-src 'self' https://api.aladhan.com",
+  "connect-src 'self' https://api.aladhan.com https://verses.quran.foundation",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

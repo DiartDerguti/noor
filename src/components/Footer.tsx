@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import InstallApp from "./InstallApp";
+import OfflineStatus from "./OfflineStatus";
 
 const COLUMNS = [
   {
@@ -54,6 +55,7 @@ export default function Footer() {
             Kurani në shqip dhe hadithe të sakta nga Buhariu e Muslimi, nga burime zyrtare.
           </p>
           <InstallApp className="mt-5" />
+          <OfflineStatus className="mt-5 max-w-xs" />
         </div>
 
         {COLUMNS.map((col) => (

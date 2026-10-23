@@ -1,10 +1,8 @@
 import { BASMALA_QPC, type SurahMeta } from "@/lib/quran";
-import { getMushafPage, pageFontUrl } from "@/lib/mushaf";
+import { pageFontUrl, type MushafPageData } from "@/lib/mushaf";
 
-export default async function MushafPage({ page, surahs }: { page: number; surahs: SurahMeta[] }) {
-  const data = await getMushafPage(page).catch(() => null);
-  if (!data) return null;
-
+export default function MushafPage({ data, surahs }: { data: MushafPageData; surahs: SurahMeta[] }) {
+  const { page } = data;
   const font = `qcf-p${page}`;
   const centered = page <= 2;
   const name = (n: number) => surahs.find((s) => s.number === n);
@@ -64,11 +62,11 @@ export default async function MushafPage({ page, surahs }: { page: number; surah
   );
 }
 
-export function MushafPages({ pages, surahs }: { pages: number[]; surahs: SurahMeta[] }) {
+export function MushafPages({ pages, surahs }: { pages: MushafPageData[]; surahs: SurahMeta[] }) {
   return (
     <div className="space-y-6">
       {pages.map((p) => (
-        <MushafPage key={p} page={p} surahs={surahs} />
+        <MushafPage key={p.page} data={p} surahs={surahs} />
       ))}
     </div>
   );
