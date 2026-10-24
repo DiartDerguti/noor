@@ -29,6 +29,7 @@ const SECTIONS: { href: string; icon: Icon3DName; title: string; arabic: string;
   { href: "/hadithe/rijadus-salihin", icon: "scroll", title: "Rijadus Salihin", arabic: "رياض الصالحين", text: "Koleksioni i Imam Neveviut" },
   { href: "/mburoja", icon: "shield", title: "Mburoja e Muslimanit", arabic: "حصن المسلم", text: "Lutjet e përditshme me audio" },
   { href: "/emrat", icon: "star", title: "99 Emrat e Allahut", arabic: "الأسماء الحسنى", text: "Kuptimet dhe karta për t'i mësuar" },
+  { href: "/elifbaja", icon: "letters", title: "Elifbaja", arabic: "الحروف", text: "Shkronjat arabe, me karta dhe lojëra" },
   { href: "/takvimi", icon: "mosque", title: "Takvimi", arabic: "المواقيت", text: "Kohët e namazit për qytetin tënd" },
   { href: "/meso", icon: "cap", title: "Mëso", arabic: "تعلّم", text: "Kuiz për suret dhe hadithet" },
   { href: "/rreth", icon: "seal", title: "Burimet", arabic: "المصادر", text: "Nga vjen çdo tekst" },

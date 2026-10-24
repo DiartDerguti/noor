@@ -1,49 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AllahName } from "@/lib/names";
 import { fold } from "@/lib/hisn-client";
 import CopyButton from "./CopyButton";
+import Sheet from "./Sheet";
+import { learnedStore, shuffle } from "@/lib/learned";
 
-const KEY = "noor:emrat-learned";
-const listeners = new Set<() => void>();
-let cache: number[] | null = null;
-const EMPTY: number[] = [];
+const learnedNames = learnedStore("noor:emrat-learned");
+const toggleLearned = (n: number) => learnedNames.toggle(String(n));
 
-function getLearned() {
-  if (cache) return cache;
-  try {
-    cache = JSON.parse(localStorage.getItem(KEY) ?? "[]") as number[];
-  } catch {
-    cache = [];
-  }
-  return cache;
-}
-
-function toggleLearned(n: number) {
-  const list = getLearned();
-  cache = list.includes(n) ? list.filter((x) => x !== n) : [...list, n];
-  try {
-    localStorage.setItem(KEY, JSON.stringify(cache));
-  } catch {}
-  listeners.forEach((l) => l());
-}
-
-function useLearned() {
-  return useSyncExternalStore(
-    (l) => {
-      listeners.add(l);
-      return () => listeners.delete(l);
-    },
-    getLearned,
-    () => EMPTY,
-  );
-}
 
 type Filter = "all" | "learned" | "new";
 
 export default function NamesExplorer({ names }: { names: AllahName[] }) {
-  const learned = useLearned();
+  const learned = learnedNames.use();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<number | null>(null);
@@ -63,8 +34,8 @@ export default function NamesExplorer({ names }: { names: AllahName[] }) {
   const list = useMemo(() => {
     const q = fold(query.trim());
     return names.filter((x) => {
-      if (filter === "learned" && !learned.includes(x.n)) return false;
-      if (filter === "new" && learned.includes(x.n)) return false;
+      if (filter === "learned" && !learned.includes(String(x.n))) return false;
+      if (filter === "new" && learned.includes(String(x.n))) return false;
       if (!q) return true;
       return String(x.n) === q || fold(`${x.name} ${x.meaning}`).includes(q) || x.arabic.includes(query.trim());
     });
@@ -136,7 +107,7 @@ export default function NamesExplorer({ names }: { names: AllahName[] }) {
 
       <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {list.map((x) => {
-          const isLearned = learned.includes(x.n);
+          const isLearned = learned.includes(String(x.n));
           return (
             <li key={x.n}>
               <button
@@ -179,39 +150,6 @@ export default function NamesExplorer({ names }: { names: AllahName[] }) {
   );
 }
 
-function useDialog(onClose: () => void) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-}
-
-function Sheet({ onClose, label, children }: { onClose: () => void; label: string; children: React.ReactNode }) {
-  useDialog(onClose);
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6" role="dialog" aria-modal aria-label={label}>
-      <div className="animate-in-fade absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="animate-in-up border-line bg-paper relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[2rem] border px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:max-w-lg sm:rounded-[2rem] sm:p-8">
-        <span className="bg-line mx-auto mb-4 block h-1 w-10 rounded-full sm:hidden" aria-hidden />
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Mbyll"
-          className="border-line text-muted hover:text-ink absolute top-4 right-4 grid size-9 place-items-center rounded-full border transition-colors"
-        >
-          ✕
-        </button>
-        {children}
-      </div>
-    </div>
-  );
-}
-
 function NameDialog({
   names,
   n,
@@ -220,12 +158,12 @@ function NameDialog({
 }: {
   names: AllahName[];
   n: number;
-  learned: number[];
+  learned: string[];
   onChange: (n: number | null) => void;
 }) {
   const x = names[n - 1];
   const close = useCallback(() => onChange(null), [onChange]);
-  const isLearned = learned.includes(n);
+  const isLearned = learned.includes(String(n));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -287,18 +225,9 @@ function NameDialog({
   );
 }
 
-function shuffle<T>(list: T[]) {
-  const a = [...list];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function Flashcards({ names, learned, onClose }: { names: AllahName[]; learned: number[]; onClose: () => void }) {
+function Flashcards({ names, learned, onClose }: { names: AllahName[]; learned: string[]; onClose: () => void }) {
   const [deck] = useState(() => {
-    const fresh = names.filter((x) => !learned.includes(x.n));
+    const fresh = names.filter((x) => !learned.includes(String(x.n)));
     return shuffle(fresh.length ? fresh : names);
   });
   const [i, setI] = useState(0);
@@ -310,7 +239,7 @@ function Flashcards({ names, learned, onClose }: { names: AllahName[]; learned: 
   function answer(knows: boolean) {
     if (knows) {
       setKnown((k) => k + 1);
-      if (!learned.includes(card.n)) toggleLearned(card.n);
+      if (!learned.includes(String(card.n))) toggleLearned(card.n);
     }
     setFlipped(false);
     setI((x) => x + 1);

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const SLIDES = [
@@ -31,7 +32,7 @@ export default function HeroBanner() {
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative isolate -mt-16 h-[72vh] min-h-[520px] overflow-hidden sm:h-[80vh] sm:min-h-[620px]"
+      className="relative isolate -mt-16 h-[56vh] min-h-[420px] overflow-hidden sm:h-[80vh] sm:min-h-[620px]"
     >
       {SLIDES.slice(0, Math.max(loaded, index + 1) + 1).map((s, i) => (
         <Image
@@ -76,6 +77,28 @@ export default function HeroBanner() {
         <h1 className="font-serif text-4xl font-semibold tracking-tight drop-shadow-lg sm:text-6xl">
           Esselamu alejkum.
         </h1>
+        <p className="text-ink/85 mt-3 max-w-md text-base leading-relaxed drop-shadow sm:text-lg">
+          Kurani, hadithet, lutjet, kohët e namazit etj, në shqip. Falas dhe pa internet.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {[
+            ["/kurani", "Lexo Kuranin"],
+            ["/hadithe", "Hadithet"],
+            ["/mburoja", "Lutjet"],
+          ].map(([href, label], i) => (
+            <Link
+              key={href}
+              href={href}
+              className={`rounded-full px-4 py-2 text-sm font-medium backdrop-blur transition-colors ${
+                i === 0
+                  ? "bg-emerald-deep text-paper hover:opacity-90"
+                  : "border border-white/20 bg-black/25 text-ink hover:border-gold"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

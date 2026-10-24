@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/mburoja", 0.9),
     ...Array.from({ length: HISN_TOTAL }, (_, i) => page(`/mburoja/${i + 1}`, 0.7)),
     page("/emrat", 0.8),
+    page("/elifbaja", 0.7),
     page("/takvimi", 0.8),
     page("/meso", 0.6),
     page("/rreth", 0.4),

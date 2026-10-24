@@ -20,6 +20,7 @@ const COLUMNS = [
       { href: "/hadithe/rijadus-salihin", label: "Rijadus Salihin" },
       { href: "/mburoja", label: "Mburoja e Muslimanit" },
       { href: "/emrat", label: "99 Emrat e Allahut" },
+      { href: "/elifbaja", label: "Elifbaja" },
       { href: "/meso", label: "Kuizi" },
       { href: "/rreth", label: "Burimet" },
     ],

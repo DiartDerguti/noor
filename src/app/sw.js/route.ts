@@ -8,7 +8,7 @@ import { pageFontUrl } from "@/lib/mushaf";
 export const dynamic = "force-static";
 
 // Pages that are cached as they are; every other page is rendered by the offline shell.
-const PAGES = ["/offline", "/", "/kurani", "/hadithe", "/hadithe/rijadus-salihin", "/mburoja", "/emrat", "/meso", "/rreth", "/takvimi"];
+const PAGES = ["/offline", "/", "/kurani", "/hadithe", "/hadithe/rijadus-salihin", "/mburoja", "/emrat", "/meso", "/rreth", "/takvimi", "/elifbaja"];
 const ASSETS = ["/manifest.webmanifest", "/icon.svg", "/icon-192", "/icon-512", "/icon-maskable"];
 
 async function files(dir: string): Promise<string[]> {

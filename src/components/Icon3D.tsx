@@ -1,7 +1,7 @@
 import { useId } from "react";
 
 export type Icon3DName =
-  "moon" | "mosque" | "calendar" | "book" | "scroll" | "cap" | "seal" | "shield" | "star" | "home";
+  "moon" | "mosque" | "calendar" | "book" | "scroll" | "cap" | "seal" | "shield" | "star" | "home" | "letters";
 
 function Defs({ id }: { id: string }) {
   return (
@@ -185,6 +185,20 @@ function Shape({ name, id }: { name: Icon3DName; id: string }) {
             99
           </text>
           <path d="M14 17a3 3 0 0 1 3-3h30a3 3 0 0 1 3 3v3H14Z" fill={shine} />
+        </>
+      );
+    case "letters":
+      return (
+        <>
+          <rect x="6" y="14" width="30" height="34" rx="7" fill={green} transform="rotate(-8 21 31)" />
+          <rect x="28" y="14" width="30" height="34" rx="7" fill={gold} transform="rotate(8 43 31)" />
+          <text x="21" y="38" textAnchor="middle" fontSize="22" fontWeight="700" fill="#fff4d6" fontFamily="serif" transform="rotate(-8 21 31)">
+            ا
+          </text>
+          <text x="43" y="38" textAnchor="middle" fontSize="22" fontWeight="700" fill="#0b4a35" fontFamily="serif" transform="rotate(8 43 31)">
+            ب
+          </text>
+          <rect x="28" y="14" width="30" height="6" rx="3" fill={shine} transform="rotate(8 43 31)" />
         </>
       );
     case "home":

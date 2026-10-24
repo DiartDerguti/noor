@@ -4,7 +4,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
     <div className="mx-auto max-w-xl px-4 py-24 text-center">
       <h1 className="font-serif text-3xl font-semibold">Diçka nuk shkoi mirë</h1>
-      <p className="mt-3 text-muted">Burimi nuk u përgjigj. Kontrollo lidhjen dhe provo përsëri.</p>
+      <p className="mt-3 text-muted">Error</p>
       <button
         type="button"
         onClick={reset}

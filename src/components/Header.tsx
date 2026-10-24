@@ -7,37 +7,30 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  useSyncExternalStore,
 } from "react";
 import Logo from "./Logo";
 import Icon3D, { type Icon3DName } from "./Icon3D";
 
-const NAV: { href: string; label: string; arabic: string; icon: Icon3DName }[] =
+type NavItem = { href: string; label: string; arabic: string; icon: Icon3DName };
+
+const NAV: NavItem[] =
   [
     { href: "/kurani", label: "Kurani", arabic: "القرآن", icon: "book" },
     { href: "/hadithe", label: "Hadithe", arabic: "الحديث", icon: "scroll" },
     { href: "/mburoja", label: "Mburoja", arabic: "حصن المسلم", icon: "shield" },
     { href: "/emrat", label: "Emrat e Allahut", arabic: "الأسماء الحسنى", icon: "star" },
+    { href: "/elifbaja", label: "Elifbaja", arabic: "الحروف", icon: "letters" },
     { href: "/meso", label: "Mëso", arabic: "تعلّم", icon: "cap" },
     { href: "/rreth", label: "Burimet", arabic: "المصادر", icon: "seal" },
   ];
 
-function subscribeScroll(listener: () => void) {
-  window.addEventListener("scroll", listener, { passive: true });
-  return () => window.removeEventListener("scroll", listener);
-}
-
 export default function Header() {
   const pathname = usePathname();
-  const scrolled = useSyncExternalStore(
-    subscribeScroll,
-    () => window.scrollY > 40,
-    () => false,
-  );
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLSpanElement>(null);
-  const activeIndex = NAV.findIndex((item) => pathname.startsWith(item.href));
+  const navIndex = NAV.findIndex((item) => pathname.startsWith(item.href));
+  const activeIndex = pathname === "/" ? 0 : navIndex < 0 ? -1 : navIndex + 1;
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -74,34 +67,42 @@ export default function Header() {
     <>
       <header
         className={`sticky top-0 z-30 border-b transition-colors duration-300 ${
-          pathname === "/" && !scrolled && !open
-            ? "border-transparent bg-transparent"
-            : "border-line/70 bg-paper/85 backdrop-blur"
+          open
+            ? "border-line/70 bg-paper/85 backdrop-blur"
+            : "border-white/10 bg-paper/25 backdrop-blur-xl backdrop-saturate-150 lg:border-transparent lg:bg-transparent lg:backdrop-blur-none lg:backdrop-saturate-100"
         }`}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5"
+            aria-label="Noor, ballina"
+            className="flex items-center lg:hidden"
           >
             <Logo className="size-10" />
-            <span className="font-serif text-xl font-semibold tracking-tight">
-              Noor
-            </span>
           </Link>
 
           <nav
             ref={navRef}
-            className="border-line bg-card/70 relative ml-auto hidden items-center gap-1 rounded-full border p-1 text-sm shadow-lg shadow-black/20 lg:flex"
+            className="border-line bg-card/70 relative mx-auto hidden items-center gap-1 rounded-full border p-1 text-sm shadow-lg shadow-black/20 backdrop-blur-md lg:flex"
           >
             <span
               ref={pillRef}
               aria-hidden
               className="bg-emerald-deep shadow-emerald-deep/25 absolute top-1 bottom-1 left-0 rounded-full opacity-0 shadow-md duration-500 ease-[cubic-bezier(.3,1.3,.5,1)]"
             />
+            <Link
+              href="/"
+              data-nav-item
+              aria-label="Ballina"
+              title="Ballina"
+              className="group relative z-10 grid h-9 w-12 place-items-center rounded-full"
+            >
+              <Logo className="size-7 transition-transform duration-300 group-hover:scale-110" />
+            </Link>
+            <span aria-hidden className="bg-line mx-1 h-5 w-px" />
             {NAV.map((item, i) => {
-              const active = i === activeIndex;
+              const active = i + 1 === activeIndex;
               return (
                 <Link
                   key={item.href}
@@ -149,7 +150,7 @@ export default function Header() {
           open ? "visible opacity-100" : "invisible -translate-y-2 opacity-0"
         }`}
       >
-        <nav className="flex flex-col gap-2 p-4">
+        <nav className="flex h-full flex-col gap-2 overflow-y-auto p-4">
           {NAV.map((item, i) => {
             const active = pathname.startsWith(item.href);
             return (
@@ -158,17 +159,17 @@ export default function Header() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 style={{ transitionDelay: open ? `${i * 50}ms` : "0ms" }}
-                className={`flex items-center gap-4 rounded-2xl border px-4 py-3.5 transition-all duration-300 ${
+                className={`flex items-center gap-3 rounded-2xl border px-3.5 py-2.5 transition-all duration-300 ${
                   open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
                 } ${active ? "border-gold/60 bg-emerald-soft" : "border-line bg-card"}`}
               >
-                <Icon3D name={item.icon} className="size-11" still />
+                <Icon3D name={item.icon} className="size-8" still />
                 <span
-                  className={`flex-1 font-serif text-2xl font-semibold ${active ? "text-emerald-deep" : ""}`}
+                  className={`flex-1 font-serif text-lg font-semibold ${active ? "text-emerald-deep" : ""}`}
                 >
                   {item.label}
                 </span>
-                <span className="arabic text-gold text-xl leading-none">
+                <span className="arabic text-gold text-base leading-none">
                   {item.arabic}
                 </span>
               </Link>
