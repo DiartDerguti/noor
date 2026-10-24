@@ -34,6 +34,7 @@ export default function SurahList({ surahs }: { surahs: SurahMeta[] }) {
           <li key={s.number}>
             <Link
               href={`/kurani/${s.number}`}
+              prefetch={false}
               className="flex items-center gap-4 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-gold"
             >
               <span className="grid size-10 shrink-0 rotate-45 place-items-center rounded-lg border border-gold/50 text-sm">

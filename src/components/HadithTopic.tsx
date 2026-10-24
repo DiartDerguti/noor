@@ -43,7 +43,7 @@ export default function HadithTopic({
           {" · "}
           <Link
             href={base}
-            className="text-emerald-deep underline-offset-4 hover:underline"
+            className="text-emerald-deep underline decoration-emerald-deep/40 underline-offset-4 hover:decoration-emerald-deep"
           >
             Pastro kërkimin
           </Link>

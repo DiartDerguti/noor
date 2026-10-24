@@ -130,6 +130,10 @@ async function fetchMonth(cityId: string, year: number, month: number) {
   }
   try {
     localStorage.setItem(key, JSON.stringify(out));
+    const keep = new Set([key, monthKey(cityId, month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1), monthKey(cityId, month === 1 ? year - 1 : year, month === 1 ? 12 : month - 1)]);
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith(`noor:pt:${cityId}:`) && !keep.has(k)) localStorage.removeItem(k);
+    }
   } catch {}
   return out;
 }

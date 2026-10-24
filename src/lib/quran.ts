@@ -1,6 +1,5 @@
 import SURAHS from "./surahs.json";
 
-
 export const TRANSLATIONS = [
   { id: "sq.nahi", name: "Hasan Efendi Nahi", edition: "sqi-hasanefendinahi" },
   { id: "sq.ahmeti", name: "Sherif Ahmeti", edition: "sqi-sherifahmeti" },
@@ -14,10 +13,6 @@ export const TOTAL_AYAHS = 6236;
 export const TOTAL_PAGES = 604;
 export const TOTAL_JUZ = 30;
 export const COMPARE = "te-gjitha";
-
-export function isTranslationId(value: unknown): value is TranslationId {
-  return TRANSLATIONS.some((t) => t.id === value);
-}
 
 export function translationName(id: TranslationId) {
   return TRANSLATIONS.find((t) => t.id === id)!.name;

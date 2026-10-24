@@ -196,6 +196,7 @@ export default function HisnList({ chapters, onNavigate }: { chapters: Entry[]; 
               <li key={c.n}>
                 <Link
                   href={`/mburoja/${c.n}`}
+                  prefetch={false}
                   onClick={onNavigate}
                   data-active={isActive || undefined}
                   aria-current={isActive ? "page" : undefined}

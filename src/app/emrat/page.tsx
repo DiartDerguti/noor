@@ -16,7 +16,7 @@ export default function NamesPage() {
       <NamesExplorer names={getNames()} />
       <p className="text-muted mt-10 text-sm">
         Emrat dhe kuptimet janë marrë nga{" "}
-        <a href={NAMES_SOURCE} target="_blank" rel="noreferrer" className="text-emerald-deep underline-offset-4 hover:underline">
+        <a href={NAMES_SOURCE} target="_blank" rel="noreferrer" className="text-emerald-deep underline decoration-emerald-deep/40 underline-offset-4 hover:decoration-emerald-deep">
           mburoja.al/99emrat
         </a>
         .

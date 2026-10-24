@@ -14,15 +14,17 @@ const INTERVAL = 3500;
 export default function HeroBanner() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [loaded, setLoaded] = useState(1);
+  const [preload, setPreload] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPreload(true), 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (paused) return;
     const timer = setTimeout(
-      () => {
-        setIndex((i) => (i + 1) % SLIDES.length);
-        setLoaded((n) => Math.min(SLIDES.length, n + 1));
-      },
+      () => setIndex((i) => (i + 1) % SLIDES.length),
       INTERVAL,
     );
     return () => clearTimeout(timer);
@@ -34,7 +36,7 @@ export default function HeroBanner() {
       onMouseLeave={() => setPaused(false)}
       className="relative isolate -mt-16 h-[56vh] min-h-[420px] overflow-hidden sm:h-[80vh] sm:min-h-[620px]"
     >
-      {SLIDES.slice(0, Math.max(loaded, index + 1) + 1).map((s, i) => (
+      {SLIDES.map((s, i) => (i === 0 || i === index || preload) && (
         <Image
           key={s.src}
           src={s.src}
@@ -42,7 +44,7 @@ export default function HeroBanner() {
           fill
           priority={i === 0}
           fetchPriority={i === 0 ? "high" : "low"}
-          quality={60}
+          quality={55}
           sizes="100vw"
           style={{ objectPosition: s.position }}
           className={`-z-20 scale-[1.04] object-cover transition-[opacity,transform] duration-[1400ms] ease-out ${
@@ -54,19 +56,22 @@ export default function HeroBanner() {
       <div className="from-paper/80 via-paper/20 absolute inset-0 -z-10 bg-gradient-to-r to-transparent" />
       <div className="from-paper/80 absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b to-transparent" />
 
-      <div className="absolute top-1/2 right-3 z-10 flex -translate-y-1/2 flex-col gap-2 sm:right-5">
+      <div className="absolute top-1/2 right-3 z-10 flex -translate-y-1/2 flex-col sm:right-5">
         {SLIDES.map((s, i) => (
           <button
             key={s.src}
             type="button"
             onClick={() => setIndex(i)}
             aria-label={`Foto ${i + 1}`}
-            className={`w-1 rounded-full transition-all duration-500 ${
-              i === index
-                ? "h-5 bg-white/50"
-                : "h-1 bg-white/20 hover:bg-white/40"
-            }`}
-          />
+            aria-current={i === index}
+            className="group grid size-6 place-items-center"
+          >
+            <span
+              className={`w-1 rounded-full transition-all duration-500 ${
+                i === index ? "h-5 bg-white/50" : "h-1 bg-white/20 group-hover:bg-white/40"
+              }`}
+            />
+          </button>
         ))}
       </div>
 

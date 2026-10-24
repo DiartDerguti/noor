@@ -69,6 +69,7 @@ export default function Footer() {
                   <li key={l.href}>
                     <Link
                       href={l.href}
+                      prefetch={false}
                       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
                       className="text-muted transition-colors hover:text-ink"
                     >

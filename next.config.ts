@@ -7,6 +7,9 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self' https://verses.quran.foundation",
   "connect-src 'self' https://api.aladhan.com https://verses.quran.foundation",
+  "media-src 'self'",
+  "worker-src 'self'",
+  "manifest-src 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -16,6 +19,12 @@ const csp = [
 const nextConfig: NextConfig = {
   turbopack: { root: __dirname },
   poweredByHeader: false,
+  images: {
+    // AVIF first (smaller), WebP for older browsers; qualities used by <Image quality> must be listed.
+    formats: ["image/avif", "image/webp"],
+    qualities: [55, 75],
+    minimumCacheTTL: 2592000,
+  },
   async headers() {
     return [
       {
@@ -26,11 +35,17 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
       },
       {
         source: "/banner/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=2592000, immutable" }],
+      },
+      {
+        source: "/mburoja/:file*.mp3",
+        headers: [{ key: "Cache-Control", value: "public, max-age=2592000" }],
       },
       {
         source: "/hadithe/:id/karta",

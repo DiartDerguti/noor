@@ -20,7 +20,7 @@ export default function RiyadList({
           {matches} rezultate për „{query}“
           {matches > RIYAD_SEARCH_LIMIT && ` · shfaqen ${RIYAD_SEARCH_LIMIT} të parat, shto një fjalë tjetër për t'i ngushtuar`}
           {" · "}
-          <Link href={riyadPath()} className="text-emerald-deep underline-offset-4 hover:underline">
+          <Link href={riyadPath()} className="text-emerald-deep underline decoration-emerald-deep/40 underline-offset-4 hover:decoration-emerald-deep">
             Pastro kërkimin
           </Link>
         </p>

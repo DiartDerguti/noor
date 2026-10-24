@@ -61,17 +61,22 @@ export default function HadithCarousel({ items }: { items: Item[] }) {
             Lexo hadithin →
           </Link>
         </span>
-        <span className="flex items-center gap-1.5">
+        <span className="-mx-1 flex items-center">
           {items.map((h, i) => (
             <button
               key={h.id}
               type="button"
               onClick={() => setIndex(i)}
               aria-label={`Hadithi ${i + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                i === index ? "w-5 bg-gold" : "w-1.5 bg-white/20 hover:bg-white/40"
-              }`}
-            />
+              aria-current={i === index}
+              className="group grid h-6 min-w-6 place-items-center px-0.5"
+            >
+              <span
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  i === index ? "w-5 bg-gold" : "w-1.5 bg-white/20 group-hover:bg-white/40"
+                }`}
+              />
+            </button>
           ))}
         </span>
       </figcaption>

@@ -32,6 +32,7 @@ export default function AyahList({
             {showSurahHeaders && (
               <Link
                 href={`/kurani/${surah.number}`}
+                prefetch={false}
                 className="border-line bg-card hover:border-gold mb-2 flex items-center justify-between gap-4 rounded-2xl border px-5 py-4 transition-colors"
               >
                 <span>

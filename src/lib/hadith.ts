@@ -76,7 +76,7 @@ export function sourceOf(attributionAr: string): Source | null {
 
 function isMostlyArabic(text: string) {
   const letters = text.replace(/[^\p{L}]/gu, "");
-  const arabic = text.replace(/[^؀-ۿ]/g, "");
+  const arabic = text.replace(/[^\u0600-\u06ff]/g, "");
   return letters.length > 0 && arabic.length / letters.length > 0.5;
 }
 
@@ -126,7 +126,7 @@ export function simplify(text: string) {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();

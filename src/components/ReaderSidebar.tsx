@@ -101,6 +101,7 @@ function Panel({ surahs, onNavigate }: { surahs: SurahMeta[]; onNavigate?: () =>
             <li key={item.key}>
               <Link
                 href={item.href}
+                prefetch={false}
                 onClick={onNavigate}
                 data-active={item.active || undefined}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
